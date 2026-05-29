@@ -1,0 +1,17 @@
+name: eventia-interfaces
+services:
+  db:
+    image: mariadb:11.3.2
+    container_name: eventia-interfaces-db
+    environment:
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+      MYSQL_DATABASE: eventia_interfaces_db
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3010:3306"
+    volumes:
+      - eventia_interfaces_data:/var/lib/mysql
+
+volumes:
+  eventia_interfaces_data:

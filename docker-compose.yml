@@ -1,0 +1,53 @@
+name: eventia-interfaces-docker
+
+services:
+  db:
+    image: mariadb:11.3.2
+    container_name: eventia-interfaces-db-docker
+    environment:
+      MYSQL_ROOT_PASSWORD: eventia_root_pass
+      MYSQL_DATABASE: eventia_aa2_db
+      MYSQL_USER: eventia_user
+      MYSQL_PASSWORD: eventia_pass
+    ports:
+      - "3315:3306"
+    volumes:
+      - eventia_interfaces_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./eventia-backend
+      dockerfile: Dockerfile
+    container_name: eventia-interfaces-backend-docker
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/eventia_aa2_db
+      SPRING_DATASOURCE_USERNAME: eventia_user
+      SPRING_DATASOURCE_PASSWORD: eventia_pass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create
+      SPRING_SQL_INIT_MODE: always
+      SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION: true
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./eventia-frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8080
+    container_name: eventia-interfaces-frontend-docker
+    depends_on:
+      - backend
+    ports:
+      - "5175:4173"
+
+volumes:
+  eventia_interfaces_data:
