@@ -13,10 +13,17 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "eventia-clave-secreta-super-segura-2026-eventia";
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 24 horas
+    private static final String SECRET_KEY =
+            "eventia-tfg-jwt-secret-key-lucia-felipe-2026";
 
-    public String generateToken(Long id, String email, String rol) {
+    private static final long EXPIRATION_TIME =
+            1000 * 60 * 60 * 24;
+
+    public String generateToken(Long id,
+                                String email,
+                                String rol,
+                                String nombre) {
+
         Date now = new Date();
         Date expiration = new Date(now.getTime() + EXPIRATION_TIME);
 
@@ -24,6 +31,7 @@ public class JwtService {
                 .subject(email)
                 .claim("id", id)
                 .claim("rol", rol)
+                .claim("nombre", nombre)
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(getSignInKey())
@@ -47,7 +55,9 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    private <T> T extractClaim(String token,
+                               Function<Claims, T> claimsResolver) {
+
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
@@ -61,6 +71,8 @@ public class JwtService {
     }
 
     private SecretKey getSignInKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(
+                SECRET_KEY.getBytes(StandardCharsets.UTF_8)
+        );
     }
 }

@@ -1,19 +1,20 @@
 package com.svalero.eventia.controller;
 
 import com.svalero.eventia.domain.Usuario;
+import com.svalero.eventia.domain.enums.RolUsuario;
 import com.svalero.eventia.dto.auth.AuthResponse;
 import com.svalero.eventia.dto.auth.LoginRequest;
 import com.svalero.eventia.dto.auth.RegisterRequest;
 import com.svalero.eventia.repository.UsuarioRepository;
 import com.svalero.eventia.security.JwtService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import com.svalero.eventia.dto.auth.MeResponse;
 import org.springframework.security.core.Authentication;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/auth")
@@ -32,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
 
         Usuario usuario = usuarioRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -44,13 +45,15 @@ public class AuthController {
         String token = jwtService.generateToken(
                 usuario.getId(),
                 usuario.getEmail(),
-                usuario.getRol()
+                usuario.getRol().name(),
+                usuario.getNombre()
         );
 
         AuthResponse response = new AuthResponse(
                 token,
+                usuario.getId(),
                 usuario.getEmail(),
-                usuario.getRol(),
+                usuario.getRol().name(),
                 usuario.getNombre()
         );
 
@@ -58,7 +61,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
 
         if (usuarioRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -70,25 +73,25 @@ public class AuthController {
         usuario.setEmail(registerRequest.getEmail());
         usuario.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         usuario.setTelefono(registerRequest.getTelefono());
-
+        usuario.setFechaNacimiento(registerRequest.getFechaNacimiento());
+        usuario.setRol(RolUsuario.USUARIO);
         usuario.setActivo(true);
-        usuario.setFechaNacimiento(LocalDate.of(2000, 1, 1));
-        usuario.setEventosAsistidos(0);
-        usuario.setRol("CLIENTE");
-        usuario.setSaldoCuenta(0f);
+        usuario.setFechaRegistro(LocalDateTime.now());
 
         Usuario usuarioGuardado = usuarioRepository.save(usuario);
 
         String token = jwtService.generateToken(
                 usuarioGuardado.getId(),
                 usuarioGuardado.getEmail(),
-                usuarioGuardado.getRol()
+                usuarioGuardado.getRol().name(),
+                usuarioGuardado.getNombre()
         );
 
         AuthResponse response = new AuthResponse(
                 token,
+                usuarioGuardado.getId(),
                 usuarioGuardado.getEmail(),
-                usuarioGuardado.getRol(),
+                usuarioGuardado.getRol().name(),
                 usuarioGuardado.getNombre()
         );
 
@@ -96,7 +99,7 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<MeResponse> me(Authentication authentication) {
+    public ResponseEntity<AuthResponse> me(Authentication authentication) {
 
         if (authentication == null || authentication.getName() == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -105,12 +108,12 @@ public class AuthController {
         Usuario usuario = usuarioRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        MeResponse response = new MeResponse(
+        AuthResponse response = new AuthResponse(
+                null,
                 usuario.getId(),
-                usuario.getNombre(),
                 usuario.getEmail(),
-                usuario.getRol(),
-                usuario.getSaldoCuenta()
+                usuario.getRol().name(),
+                usuario.getNombre()
         );
 
         return ResponseEntity.ok(response);
