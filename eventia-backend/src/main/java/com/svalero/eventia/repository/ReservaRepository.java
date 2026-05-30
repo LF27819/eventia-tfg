@@ -1,29 +1,34 @@
 package com.svalero.eventia.repository;
 
 import com.svalero.eventia.domain.Reserva;
+import com.svalero.eventia.domain.enums.EstadoReserva;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
-@Repository
 public interface ReservaRepository extends CrudRepository<Reserva, Long> {
 
     List<Reserva> findAll();
 
-    @Query("select r from Reserva r where " +
-            "(:metodoPago is null or lower(r.metodoPago) like lower(concat('%', :metodoPago, '%'))) and " +
-            "(:codigoReserva is null or lower(r.codigoReserva) like lower(concat('%', :codigoReserva, '%'))) and " +
-            "(:confirmada is null or r.confirmada = :confirmada)")
+    Optional<Reserva> findByCodigoReserva(String codigoReserva);
 
-    List<Reserva> findByFilters(@Param("metodoPago") String metodoPago,
-                                     @Param("codigoReserva") String codigoReserva,
-                                     @Param("confirmada") Boolean confirmada);
+    List<Reserva> findByUsuarioId(long usuarioId);
 
+    List<Reserva> findByEventoId(long eventoId);
 
-    @Query("select r from Reserva r where r.confirmada = true")
-    List<Reserva> findConfirmedReservas();
+    List<Reserva> findByEstado(EstadoReserva estado);
 
+    List<Reserva> findByUsuarioIdAndEstado(long usuarioId, EstadoReserva estado);
+
+    List<Reserva> findByEventoIdAndEstado(long eventoId, EstadoReserva estado);
+
+    List<Reserva> findByFechaReservaBetween(LocalDateTime desde, LocalDateTime hasta);
+
+    long countByEventoId(long eventoId);
+
+    long countByEventoIdAndEstado(long eventoId, EstadoReserva estado);
+
+    boolean existsByCodigoReserva(String codigoReserva);
 }
