@@ -1,6 +1,7 @@
 package com.svalero.eventia.controller;
 
 import com.svalero.eventia.domain.Usuario;
+import com.svalero.eventia.domain.enums.RolUsuario;
 import com.svalero.eventia.exception.ErrorResponse;
 import com.svalero.eventia.exception.UsuarioNotFoundException;
 import com.svalero.eventia.service.UsuarioService;
@@ -8,17 +9,20 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/usuarios")
 public class UsuarioController {
 
     @Autowired
@@ -26,66 +30,73 @@ public class UsuarioController {
 
     private final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
 
-    @GetMapping("/usuarios")
+    @GetMapping
     public ResponseEntity<List<Usuario>> getAllUsuarios(
             @RequestParam(required = false) String nombre,
             @RequestParam(required = false) String email,
-            @RequestParam(required = false) String rol) {
-        logger.info("GET /usuarios - filtros nombre={}, categoria={}, cancelado={}", nombre, email, rol);
-        List<Usuario> usuarios = usuarioService.findAll(nombre, email, rol);
-        return ResponseEntity.ok(usuarios);
+            @RequestParam(required = false) RolUsuario rol,
+            @RequestParam(required = false) Boolean activo) {
+
+        logger.info("GET /usuarios - filtros nombre={}, email={}, rol={}, activo={}",
+                nombre, email, rol, activo);
+
+        return ResponseEntity.ok(usuarioService.findAll(nombre, email, rol, activo));
     }
 
-    @GetMapping("/usuarios/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Usuario> getUsuario(@PathVariable long id) throws UsuarioNotFoundException {
-        logger.info("GET/usuarios/{}", id);
-        Usuario usuario = usuarioService.findById(id);
-        return ResponseEntity.ok(usuario);
+        logger.info("GET /usuarios/{}", id);
+        return ResponseEntity.ok(usuarioService.findById(id));
     }
 
-    @PostMapping("/usuarios")
+    @GetMapping("/email/{email}")
+    public ResponseEntity<Usuario> getByEmail(@PathVariable String email) throws UsuarioNotFoundException {
+        logger.info("GET /usuarios/email/{}", email);
+        return ResponseEntity.ok(usuarioService.findByEmail(email));
+    }
+
+    @GetMapping("/registro")
+    public ResponseEntity<List<Usuario>> getByFechaRegistro(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime desde,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime hasta) {
+
+        logger.info("GET /usuarios/registro - desde={}, hasta={}", desde, hasta);
+        return ResponseEntity.ok(usuarioService.findByFechaRegistroBetween(desde, hasta));
+    }
+
+    @PostMapping
     public ResponseEntity<Usuario> addUsuario(@Valid @RequestBody Usuario usuario) {
-        logger.info("POST/usuarios");
-        Usuario nuevoUsuario = usuarioService.add(usuario);
-        return new ResponseEntity<>(nuevoUsuario, HttpStatus.CREATED);
+        logger.info("POST /usuarios");
+        return new ResponseEntity<>(usuarioService.add(usuario), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/usuarios/{id}")
+    @PutMapping("/{id}")
+    public ResponseEntity<Usuario> modifyUsuario(@PathVariable long id,
+                                                 @Valid @RequestBody Usuario usuario) throws UsuarioNotFoundException {
+        logger.info("PUT /usuarios/{}", id);
+        return ResponseEntity.ok(usuarioService.modify(id, usuario));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Usuario> patchUsuario(@PathVariable long id,
+                                                @RequestBody Map<String, Object> updates) throws UsuarioNotFoundException {
+        logger.info("PATCH /usuarios/{}", id);
+        return ResponseEntity.ok(usuarioService.patch(id, updates));
+    }
+
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<Usuario> cambiarEstado(@PathVariable long id,
+                                                 @RequestParam boolean activo) throws UsuarioNotFoundException {
+        logger.info("PATCH /usuarios/{}/estado?activo={}", id, activo);
+        return ResponseEntity.ok(usuarioService.cambiarEstado(id, activo));
+    }
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUsuario(@PathVariable long id) throws UsuarioNotFoundException {
-        logger.info("DELETE/usuarios/{}",id);
+        logger.info("DELETE /usuarios/{}", id);
         usuarioService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-    @PutMapping("/usuarios/{id}")
-    public ResponseEntity<Usuario> modifyUsuario(@PathVariable long id, @Valid @RequestBody Usuario usuario) throws UsuarioNotFoundException {
-        logger.info("PUT/usuarios/{}",id);
-        Usuario usuarioModificado = usuarioService.modify(id, usuario);
-        return ResponseEntity.ok(usuarioModificado);
-    }
-
-    @PatchMapping("/usuarios/{id}")
-    public ResponseEntity<Usuario> patchUsuario(@PathVariable long id,
-                                                @RequestBody Map<String, Object> updates) throws UsuarioNotFoundException {
-        logger.info("PATCH/usuarios/{}",id);
-        Usuario usuarioActualizado = usuarioService.patch(id, updates);
-        return ResponseEntity.ok(usuarioActualizado);
-    }
-
-    @PatchMapping("/usuarios/{id}/saldo")
-    public ResponseEntity<Usuario> addSaldo(@PathVariable long id,
-                                            @RequestBody Map<String, Float> request) throws UsuarioNotFoundException {
-        float cantidad = request.get("cantidad");
-
-        Usuario usuario = usuarioService.findById(id);
-        usuario.setSaldoCuenta(usuario.getSaldoCuenta() + cantidad);
-
-        Usuario usuarioActualizado = usuarioService.modify(id, usuario);
-
-        return ResponseEntity.ok(usuarioActualizado);
-    }
-
-
 
     @ExceptionHandler(UsuarioNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleException(UsuarioNotFoundException unfe) {
@@ -93,9 +104,19 @@ public class UsuarioController {
         return new ResponseEntity<>(ErrorResponse.notFound(unfe.getMessage()), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleException(IllegalArgumentException iae) {
+        logger.error("Error 409 - conflicto: {}", iae.getMessage());
+        return new ResponseEntity<>(
+                ErrorResponse.generalError(409, "conflict", iae.getMessage()),
+                HttpStatus.CONFLICT
+        );
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleException(MethodArgumentNotValidException manve) {
         logger.error("Error 400 - Error de validación", manve);
+
         Map<String, String> errors = new HashMap<>();
         manve.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
@@ -103,8 +124,7 @@ public class UsuarioController {
             errors.put(fieldName, message);
         });
 
-        ErrorResponse errorResponse = ErrorResponse.validationError(errors);
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ErrorResponse.validationError(errors), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
