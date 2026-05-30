@@ -1,5 +1,6 @@
 package com.svalero.eventia.domain;
 
+import com.svalero.eventia.domain.enums.EstadoReserva;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -19,29 +21,37 @@ public class Reserva {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @NotNull(message = "La fecha no puede estar vacía")
+
     @Column(name = "fecha_reserva")
     private LocalDateTime fechaReserva;
-    @Min(value = 0, message = "La cantidad de entradas no puede ser negativa")
+
+    @Min(value = 1, message = "La cantidad de entradas debe ser al menos 1")
     @Column(name = "cantidad_entradas")
     private int cantidadEntradas;
-    @NotNull(message = "El precio no puede estar vacío")
-    @Min(value = 0, message = "El valor no puede ser negativo" )
+
+    @Min(value = 0, message = "El precio total no puede ser negativo")
     @Column(name = "precio_total")
     private float precioTotal;
-    @Column(name = "metodo_pago")
-    private String metodoPago;
-    @NotNull(message = "El codigo no puede estar vacío")
-    @Column(name= "codigo_reserva", unique = true)
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EstadoReserva estado;
+
+    @Column(name = "codigo_reserva", unique = true)
     private String codigoReserva;
-    @Column
-    private boolean confirmada;
+
+
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @NotNull(message = "El usuario es obligatorio")
     private Usuario usuario;
 
     @ManyToOne
     @JoinColumn(name = "evento_id")
+    @NotNull(message = "El evento es obligatorio")
     private Evento evento;
+
+    @OneToMany(mappedBy = "reserva")
+    private List<Entrada> entradas;
 }

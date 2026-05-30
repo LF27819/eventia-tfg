@@ -1,17 +1,15 @@
 package com.svalero.eventia.domain;
 
+import com.svalero.eventia.domain.enums.RolUsuario;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-
+import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -23,31 +21,45 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @NotNull(message = "El nombre es obligatorio")
-    @Column
+
+    @NotBlank(message = "El nombre es obligatorio")
+    @Column(nullable = false)
     private String nombre;
-    @NotNull(message = "El apellido es obligatorio")
-    @Column
+
+    @NotBlank(message = "Los apellidos son obligatorios")
+    @Column(nullable = false)
     private String apellidos;
-    @NotNull(message = "El email es obligatorio")
+
+    @NotBlank(message = "El email es obligatorio")
     @Email(message = "El email no es válido")
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
-    @NotNull(message = "La contraseña es obligatoria")
-    @Column
+
+    @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 6, max = 100, message = "La contraseña debe tener entre 6 y 100 caracteres")
+    @Column(nullable = false)
     private String password;
+
     @Column
     private String telefono;
-    @Column
-    private boolean activo;
+
     @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
-    @Column(name = "eventos_asistidos")
-    private int eventosAsistidos;
-    @Column
-    private String rol;
-    @Min(value = 0, message = "El saldo no puede ser negativo" )
-    @Column(name = "saldo_cuenta")
-    private float saldoCuenta;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RolUsuario rol;
+
+    @Column(nullable = false)
+    private boolean activo;
+
+    @Column(name = "fecha_registro")
+    private LocalDateTime fechaRegistro;
+
+
+    @OneToMany(mappedBy = "organizador")
+    private List<Evento> eventosOrganizados;
+
+    @OneToMany(mappedBy = "usuario")
+    private List<Reserva> reservas;
 }

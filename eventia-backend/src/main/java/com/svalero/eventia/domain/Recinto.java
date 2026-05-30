@@ -2,12 +2,12 @@ package com.svalero.eventia.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -19,26 +19,43 @@ public class Recinto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @NotNull(message = "El nombre no puede estar vacío")
-    @Column
+
+    @NotBlank(message = "El nombre es obligatorio")
+    @Column(nullable = false)
     private String nombre;
-    @NotNull(message = "La dirección no puede estar vacía")
-    @Column
+
+    @NotBlank(message = "La dirección es obligatoria")
+    @Column(nullable = false)
     private String direccion;
-    @NotNull(message = "La ubicación no puede estar vacía")
-    @Column
+
+    @NotBlank(message = "La ciudad es obligatoria")
+    @Column(nullable = false)
     private String ciudad;
-    @Min(value = 0, message = "La capacidad no puede ser negativa")
+
     @Column
-    private int capacidad;
+    private String provincia;
+
+    @Min(value = 1, message = "El aforo debe ser mayor que 0")
+    @Column(nullable = false)
+    private int aforo;
+
+    @Column(length = 1000)
+    private String descripcion;
+
+    @Column(name = "imagen_url")
+    private String imagenUrl;
+
     @Column
-    private boolean cubierto;
-    @Min(value = 0, message = "El precio no puede ser negativo" )
-    @Column(name = "precio_alquiler")
-    private float precioAlquiler;
-    @Min(value = 0, message = "El nuemro de eventos no puede ser negativo" )
-    @Column(name = "eventos_celebrados")
-    private int eventosCelebrados;
-    @Column(name = "fecha_inauguracion")
-    private LocalDate fechaInauguracion;
+    private Double latitud;
+
+    @Column
+    private Double longitud;
+
+    @Column(name = "google_place_id")
+    private String googlePlaceId;
+
+
+
+    @OneToMany(mappedBy = "recinto")
+    private List<Evento> eventos;
 }
