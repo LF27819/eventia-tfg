@@ -1,0 +1,17 @@
+services:
+  eventia-db:
+    image: mariadb:11.3.2
+    container_name: eventia-tfg-db
+    restart: unless-stopped
+    ports:
+      - "3313:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass_tfg
+      MYSQL_DATABASE: eventia_tfg_db
+      MYSQL_USER: eventia_tfg_user
+      MYSQL_PASSWORD: eventia_tfg_pass
+    volumes:
+      - eventia_tfg_data:/var/lib/mysql
+
+volumes:
+  eventia_tfg_data:
