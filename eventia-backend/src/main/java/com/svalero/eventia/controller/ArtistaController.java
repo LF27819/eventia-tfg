@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/artistas")
 public class ArtistaController {
 
     @Autowired
@@ -26,60 +27,66 @@ public class ArtistaController {
 
     private final Logger logger = LoggerFactory.getLogger(ArtistaController.class);
 
-    @GetMapping("/artistas")
+    @GetMapping
     public ResponseEntity<List<Artista>> getAllArtistas(
             @RequestParam(required = false) String nombreArtistico,
             @RequestParam(required = false) String generoMusical,
-            @RequestParam(required = false) Boolean activo) {
-        logger.info("GET /artistas - filtros nombre={}, categoria={}, cancelado={}", nombreArtistico, generoMusical, activo);
-        List<Artista> artistas = artistaService.findAll(nombreArtistico, generoMusical,activo);
+            @RequestParam(required = false) Boolean activo,
+            @RequestParam(required = false) Float cacheMinimo,
+            @RequestParam(required = false) Float cacheMaximo) {
+
+        logger.info("GET /artistas - filtros nombreArtistico={}, generoMusical={}, activo={}, cacheMinimo={}, cacheMaximo={}",
+                nombreArtistico, generoMusical, activo, cacheMinimo, cacheMaximo);
+
+        List<Artista> artistas = artistaService.findAll(nombreArtistico, generoMusical, activo, cacheMinimo, cacheMaximo);
         return ResponseEntity.ok(artistas);
     }
 
-    @GetMapping("/artistas/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Artista> getArtista(@PathVariable long id) throws ArtistaNotFoundException {
-        logger.info("GET/artistas/{}", id);
-        Artista artista = artistaService.findById(id);
-        return ResponseEntity.ok(artista);
+        logger.info("GET /artistas/{}", id);
+        return ResponseEntity.ok(artistaService.findById(id));
     }
 
-    @GetMapping("/artistas/activos")
-    public ResponseEntity<List<Artista>> getActiveArtistas() {
-        logger.info("GET/artistas/activos");
-        List<Artista> artistas = artistaService.findActiveArtistas();
-        return ResponseEntity.ok(artistas);
+    @PostMapping
+    public ResponseEntity<Artista> addArtista(@Valid @RequestBody Artista artista) {
+        logger.info("POST /artistas");
+        return new ResponseEntity<>(artistaService.add(artista), HttpStatus.CREATED);
     }
 
-    @PostMapping("/artistas")
-    public ResponseEntity<Artista> addArtista(@Valid  @RequestBody Artista artista) {
-        logger.info("POST/artistas");
-        Artista nuevoArtista = artistaService.add(artista);
-        return new ResponseEntity<>(nuevoArtista, HttpStatus.CREATED);
+    @PutMapping("/{id}")
+    public ResponseEntity<Artista> modifyArtista(@PathVariable long id,
+                                                 @Valid @RequestBody Artista artista) throws ArtistaNotFoundException {
+        logger.info("PUT /artistas/{}", id);
+        return ResponseEntity.ok(artistaService.modify(id, artista));
     }
 
-    @DeleteMapping("/artistas/{id}")
+    @PatchMapping("/{id}")
+    public ResponseEntity<Artista> patchArtista(@PathVariable long id,
+                                                @RequestBody Map<String, Object> updates) throws ArtistaNotFoundException {
+        logger.info("PATCH /artistas/{}", id);
+        return ResponseEntity.ok(artistaService.patch(id, updates));
+    }
+
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<Artista> cambiarEstado(@PathVariable long id,
+                                                 @RequestParam boolean activo) throws ArtistaNotFoundException {
+        logger.info("PATCH /artistas/{}/estado?activo={}", id, activo);
+        return ResponseEntity.ok(artistaService.cambiarEstado(id, activo));
+    }
+
+    @PatchMapping("/{id}/eventos-realizados")
+    public ResponseEntity<Artista> incrementarEventosRealizados(@PathVariable long id) throws ArtistaNotFoundException {
+        logger.info("PATCH /artistas/{}/eventos-realizados", id);
+        return ResponseEntity.ok(artistaService.incrementarEventosRealizados(id));
+    }
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteArtista(@PathVariable long id) throws ArtistaNotFoundException {
-        logger.info("DELETE/artistas/{}",id);
+        logger.info("DELETE /artistas/{}", id);
         artistaService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-    @PutMapping("/artistas/{id}")
-    public ResponseEntity<Artista> modifyArtista(@PathVariable long id, @Valid @RequestBody Artista artista) throws ArtistaNotFoundException {
-        logger.info("PUT/artistas/{}",id);
-        Artista artistaModificado = artistaService.modify(id, artista);
-        return ResponseEntity.ok(artistaModificado);
-    }
-
-    @PatchMapping("/artistas/{id}")
-    public ResponseEntity<Artista> patchArtista(@PathVariable long id,
-                                                @RequestBody Map<String, Object> updates) throws ArtistaNotFoundException {
-        logger.info("PATCH/artistas/{}",id);
-        Artista artistaActualizado = artistaService.patch(id, updates);
-        return ResponseEntity.ok(artistaActualizado);
-    }
-
-
 
     @ExceptionHandler(ArtistaNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleException(ArtistaNotFoundException anfe) {
@@ -90,6 +97,7 @@ public class ArtistaController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleException(MethodArgumentNotValidException manve) {
         logger.error("Error 400 - Error de validación", manve);
+
         Map<String, String> errors = new HashMap<>();
         manve.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
@@ -97,8 +105,7 @@ public class ArtistaController {
             errors.put(fieldName, message);
         });
 
-        ErrorResponse errorResponse = ErrorResponse.validationError(errors);
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ErrorResponse.validationError(errors), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
