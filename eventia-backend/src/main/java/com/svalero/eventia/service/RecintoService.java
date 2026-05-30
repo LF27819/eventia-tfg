@@ -1,17 +1,16 @@
 package com.svalero.eventia.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.svalero.eventia.domain.Recinto;
 import com.svalero.eventia.exception.RecintoNotFoundException;
 import com.svalero.eventia.repository.RecintoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
-import java.util.Map;
-
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class RecintoService {
@@ -22,10 +21,12 @@ public class RecintoService {
     @Autowired
     private ObjectMapper objectMapper;
 
-
-
     public List<Recinto> findAll() {
         return recintoRepository.findAll();
+    }
+
+    public List<Recinto> findAll(String nombre, String ciudad, String provincia, Integer aforoMinimo) {
+        return recintoRepository.findByFilters(nombre, ciudad, provincia, aforoMinimo);
     }
 
     public Recinto findById(Long id) throws RecintoNotFoundException {
@@ -33,15 +34,13 @@ public class RecintoService {
                 .orElseThrow(RecintoNotFoundException::new);
     }
 
-    public Recinto add(Recinto recinto) {
-        return recintoRepository.save(recinto);
+    public Recinto findByGooglePlaceId(String googlePlaceId) throws RecintoNotFoundException {
+        return recintoRepository.findByGooglePlaceId(googlePlaceId)
+                .orElseThrow(RecintoNotFoundException::new);
     }
 
-    public void delete(Long id) throws RecintoNotFoundException {
-        Recinto recinto = recintoRepository.findById(id)
-                .orElseThrow(RecintoNotFoundException::new);
-
-        recintoRepository.delete(recinto);
+    public Recinto add(Recinto recinto) {
+        return recintoRepository.save(recinto);
     }
 
     public Recinto modify(Long id, Recinto nuevoRecinto) throws RecintoNotFoundException {
@@ -51,17 +50,15 @@ public class RecintoService {
         recinto.setNombre(nuevoRecinto.getNombre());
         recinto.setDireccion(nuevoRecinto.getDireccion());
         recinto.setCiudad(nuevoRecinto.getCiudad());
-        recinto.setCapacidad(nuevoRecinto.getCapacidad());
-        recinto.setCubierto(nuevoRecinto.isCubierto());
-        recinto.setPrecioAlquiler(nuevoRecinto.getPrecioAlquiler());
-        recinto.setEventosCelebrados(nuevoRecinto.getEventosCelebrados());
-        recinto.setFechaInauguracion(nuevoRecinto.getFechaInauguracion());
+        recinto.setProvincia(nuevoRecinto.getProvincia());
+        recinto.setAforo(nuevoRecinto.getAforo());
+        recinto.setDescripcion(nuevoRecinto.getDescripcion());
+        recinto.setImagenUrl(nuevoRecinto.getImagenUrl());
+        recinto.setLatitud(nuevoRecinto.getLatitud());
+        recinto.setLongitud(nuevoRecinto.getLongitud());
+        recinto.setGooglePlaceId(nuevoRecinto.getGooglePlaceId());
 
         return recintoRepository.save(recinto);
-    }
-
-    public List<Recinto> findAll(String nombre, String ciudad, Boolean cubierto) {
-        return recintoRepository.findByFilters(nombre, ciudad, cubierto);
     }
 
     public Recinto patch(long id, Map<String, Object> updates) throws RecintoNotFoundException {
@@ -82,5 +79,12 @@ public class RecintoService {
         });
 
         return recintoRepository.save(recinto);
+    }
+
+    public void delete(Long id) throws RecintoNotFoundException {
+        Recinto recinto = recintoRepository.findById(id)
+                .orElseThrow(RecintoNotFoundException::new);
+
+        recintoRepository.delete(recinto);
     }
 }
