@@ -1,15 +1,17 @@
 package com.svalero.eventia.domain;
 
+import com.svalero.eventia.domain.enums.EstadoEvento;
+import com.svalero.eventia.domain.enums.TipoEvento;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -21,41 +23,72 @@ public class Evento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column
+
+    @NotBlank(message = "El nombre del evento es obligatorio")
+    @Column(nullable = false)
     private String nombre;
-    @Column
+
+    @Column(length = 1500)
     private String descripcion;
-    @NotNull(message = "La fecha no puede estar vacía")
-    @Column(name = "fecha_evento")
-    private LocalDate fechaEvento;
-    @NotNull(message = "La hora no puede estar vacía")
-    @Column(name = "hora_evento")
-    private LocalTime horaEvento;
-    @PositiveOrZero (message = "El precio no puede ser negativo")
-    @Column(name = "precio_entrada")
-    private float precioEntrada;
-    @Positive(message = "El aforo no puede ser negativo")
-    @Column(name = "aforo_maximo")
-    private int aforoMaximo;
-    @PositiveOrZero(message = "El numero de entradas no puede ser negativo")
-    @Column(name = "entradas_disponibles")
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_evento", nullable = false)
+    private TipoEvento tipoEvento;
+
+    @NotNull(message = "La fecha de inicio es obligatoria")
+    @Column(name = "fecha_inicio", nullable = false)
+    private LocalDateTime fechaInicio;
+
+    @NotNull(message = "La fecha de fin es obligatoria")
+    @Column(name = "fecha_fin", nullable = false)
+    private LocalDateTime fechaFin;
+
+    @Min(value = 0, message = "El precio base no puede ser negativo")
+    @Column(name = "precio_base", nullable = false)
+    private float precioBase;
+
+    @Min(value = 1, message = "El aforo total debe ser mayor que 0")
+    @Column(name = "aforo_total", nullable = false)
+    private int aforoTotal;
+
+    @Min(value = 0, message = "La edad mínima no puede ser negativa")
+    @Column(name = "edad_minima", nullable = false)
+    private int edadMinima;
+
+    @Min(value = 0, message = "Las entradas disponibles no pueden ser negativas")
+    @Column(name = "entradas_disponibles", nullable = false)
     private int entradasDisponibles;
-    @Column
-    private boolean cancelado;
-    @Column
-    private boolean presencial;
-    @Column
-    private String categoria;
 
-    @ManyToOne
-    @JoinColumn(name = "usuario_id")
-    private Usuario usuario;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EstadoEvento estado;
 
-    @ManyToOne
-    @JoinColumn(name = "artista_id")
-    private Artista artista;
+    @Column(name = "imagen_url")
+    private String imagenUrl;
+
+
 
     @ManyToOne
     @JoinColumn(name = "recinto_id")
+    @NotNull(message = "El recinto es obligatorio")
     private Recinto recinto;
-}
+
+    @ManyToOne
+    @JoinColumn(name = "organizador_id")
+    @NotNull(message = "El organizador es obligatorio")
+    private Usuario organizador;
+
+    @ManyToMany
+    @JoinTable(
+            name = "eventos_artistas",
+            joinColumns = @JoinColumn(name = "evento_id"),
+            inverseJoinColumns = @JoinColumn(name = "artista_id")
+    )
+    private List<Artista> artistas;
+
+    @OneToMany(mappedBy = "evento")
+    private List<Reserva> reservas;
+
+    @OneToMany(mappedBy = "evento")
+    private List<Entrada> entradas;
+    }
