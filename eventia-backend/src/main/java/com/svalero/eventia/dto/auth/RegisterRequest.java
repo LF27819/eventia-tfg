@@ -4,6 +4,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDate;
+
 public class RegisterRequest {
 
     @NotBlank(message = "El nombre es obligatorio")
@@ -17,21 +19,25 @@ public class RegisterRequest {
     private String email;
 
     @NotBlank(message = "La contraseña es obligatoria")
-    @Size(min = 6, max = 20, message = "La contraseña debe tener entre 6 y 20 caracteres")
+    @Size(min = 6, max = 100, message = "La contraseña debe tener entre 6 y 100 caracteres")
     private String password;
 
-    @NotBlank(message = "El teléfono es obligatorio")
     private String telefono;
+
+    private LocalDate fechaNacimiento;
 
     public RegisterRequest() {
     }
 
-    public RegisterRequest(String nombre, String apellidos, String email, String password, String telefono) {
+    public RegisterRequest(String nombre, String apellidos, String email,
+                           String password, String telefono,
+                           LocalDate fechaNacimiento) {
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.email = email;
         this.password = password;
         this.telefono = telefono;
+        this.fechaNacimiento = fechaNacimiento;
     }
 
     public String getNombre() {
@@ -72,5 +78,13 @@ public class RegisterRequest {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public LocalDate getFechaNacimiento() {
+        return fechaNacimiento;
+    }
+
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
     }
 }

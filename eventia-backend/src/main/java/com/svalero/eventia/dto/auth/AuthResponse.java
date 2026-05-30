@@ -3,6 +3,7 @@ package com.svalero.eventia.dto.auth;
 public class AuthResponse {
 
     private String token;
+    private long id;
     private String email;
     private String rol;
     private String nombre;
@@ -10,8 +11,9 @@ public class AuthResponse {
     public AuthResponse() {
     }
 
-    public AuthResponse(String token, String email, String rol, String nombre) {
+    public AuthResponse(String token, long id, String email, String rol, String nombre) {
         this.token = token;
+        this.id = id;
         this.email = email;
         this.rol = rol;
         this.nombre = nombre;
@@ -23,6 +25,14 @@ public class AuthResponse {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getEmail() {
