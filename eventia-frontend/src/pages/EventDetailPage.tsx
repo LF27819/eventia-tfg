@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import { getEventoById } from "../api/eventService";
+import { getEventoById } from "../services-api/eventService";
 import type { Event } from "../types/evento";
 
 const coordenadasRecintos: Record<string, [number, number]> = {

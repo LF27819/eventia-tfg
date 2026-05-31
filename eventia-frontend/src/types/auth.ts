@@ -21,3 +21,11 @@ export interface AuthResponse {
   rol: RolUsuario;
   nombre: string;
 }
+
+export interface MeResponse {
+  id: number;
+  email: string;
+  rol: string;
+  nombre: string;
+  token?: string | null;
+}

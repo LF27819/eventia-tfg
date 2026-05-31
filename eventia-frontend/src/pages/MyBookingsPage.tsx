@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useReducer } from "react";
 import { useAuth } from "../context/AuthContext";
-import { getReservas } from "../api/bookingService";
+import { getReservas } from "../services-api/bookingService";
 import SummaryCard from "../components/dashboard/SummaryCard";
 import BookingsDashboardTable from "../components/dashboard/BookingsDashboardTable";
 import {

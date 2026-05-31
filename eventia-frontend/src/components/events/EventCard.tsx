@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Event } from "../../types/evento";
 import { useAuth } from "../../context/AuthContext";
-import { createReserva } from "../../api/bookingService";
+import { createReserva } from "../../services-api/bookingService";
 import { Link } from "react-router-dom";
 
 interface EventCardProps {

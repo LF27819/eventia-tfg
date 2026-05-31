@@ -12,7 +12,7 @@ import {
   meRequest,
   registerRequest,
   saveToken,
-} from "../api/authService";
+} from "../services-api/authService";
 import type { AuthUser, LoginRequest, RegisterRequest } from "../types/auth";
 import { authReducer, initialAuthState } from "../reducers/authReducer";
 
