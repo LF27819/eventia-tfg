@@ -1,12 +1,10 @@
-export const ROLES = {
-  ADMIN: "ADMIN",
-  ORGANIZADOR: "ORGANIZADOR",
-  CLIENTE: "CLIENTE",
-} as const;
+import type { RolUsuario } from "../types/usuario";
 
-export const esAdmin = (rol?: string): boolean => rol === ROLES.ADMIN;
+export const esAdmin = (rol?: RolUsuario | string | null): boolean =>
+  rol === "ADMIN";
 
-export const esOrganizador = (rol?: string): boolean =>
-  rol === ROLES.ORGANIZADOR;
+export const esOrganizador = (rol?: RolUsuario | string | null): boolean =>
+  rol === "ORGANIZADOR";
 
-export const esCliente = (rol?: string): boolean => rol === ROLES.CLIENTE;
+export const esUsuario = (rol?: RolUsuario | string | null): boolean =>
+  rol === "USUARIO";
