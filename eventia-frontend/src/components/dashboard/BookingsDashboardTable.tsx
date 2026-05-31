@@ -1,4 +1,4 @@
-import type { Booking } from "../../types/booking";
+import type { Booking } from "../../types/reserva.ts";
 
 interface BookingsDashboardTableProps {
   reservas: Booking[];
