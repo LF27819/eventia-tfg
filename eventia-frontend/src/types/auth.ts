@@ -1,9 +1,4 @@
-export interface AuthResponse {
-  token: string;
-  email: string;
-  rol: string;
-  nombre: string;
-}
+import type { RolUsuario } from "./usuario";
 
 export interface LoginRequest {
   email: string;
@@ -15,21 +10,14 @@ export interface RegisterRequest {
   apellidos: string;
   email: string;
   password: string;
-  telefono: string;
+  telefono?: string;
+  fechaNacimiento?: string;
 }
 
-export interface AuthUser {
-  id?: number;
-  email: string;
-  rol: string;
-  nombre: string;
-  saldoCuenta: number;
-}
-
-export interface MeResponse {
+export interface AuthResponse {
+  token: string;
   id: number;
-  nombre: string;
   email: string;
-  rol: string;
-  saldoCuenta: number;
+  rol: RolUsuario;
+  nombre: string;
 }

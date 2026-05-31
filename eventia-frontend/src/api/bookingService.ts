@@ -1,6 +1,6 @@
 import api from "./api";
 import { getToken } from "./authService";
-import type { Booking } from "../types/booking";
+import type { Booking } from "../types/reserva.ts";
 
 export const getReservas = async (): Promise<Booking[]> => {
     const token = getToken();
