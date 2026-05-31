@@ -2,7 +2,9 @@ function Footer() {
   return (
     <footer className="footer">
       <div className="container">
-        <p>© 2026 Eventia · Proyecto de Desarrollo de Interfaces</p>
+        <p className="footer-text">
+          EVENTIA <span>2026</span> · FESTIVAL EXPERIENCE
+        </p>
       </div>
     </footer>
   );
