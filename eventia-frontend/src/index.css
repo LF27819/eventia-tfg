@@ -1371,6 +1371,53 @@ img { max-width: 100%; display: block; }
   }
 }
 
+
+/* ── Perfil ──────────────────────────────────────── */
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  letter-spacing: 0.04em;
+  color: #000;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+  box-shadow: var(--shadow-neon-cyan);
+}
+
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.profile-row:last-child {
+  border-bottom: none;
+}
+
+.profile-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.profile-value {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .page .container > div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+}
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 768px) {
   .hero-stats { flex-direction: column; gap: 24px; }
