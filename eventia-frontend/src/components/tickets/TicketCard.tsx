@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { QRCodeSVG } from "qrcode.react";
 import type { Entrada } from "../../types/entrada";
 
 interface TicketCardProps {
@@ -18,56 +19,87 @@ function estadoTag(estado: string): string {
   }
 }
 
-function TicketCard({ entrada }: TicketCardProps) {
-  return (
-    <article className="ticket-card">
-      <div className="ticket-side">
-        <span>EVENTIA</span>
-      </div>
+function formatFecha(fecha?: string): string {
+  if (!fecha) return "Fecha pendiente";
 
+  return new Date(fecha).toLocaleDateString("es-ES", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function TicketCard({ entrada }: TicketCardProps) {
+  const evento = entrada.evento;
+
+  return (
+    <article className="ticket-card ticket-card-horizontal">
       <div className="ticket-main">
         <div className="ticket-header">
-          <span className={`tag ${estadoTag(entrada.estado)}`}>
-            {entrada.estado}
-          </span>
+          <div>
+            <span className="ticket-kicker">EVENTIA PASS</span>
+            <h3>{evento?.nombre ?? "Evento"}</h3>
+          </div>
 
-          <span className="tag tag-cyan">{entrada.tipoEntrada}</span>
+          <div className="ticket-tags">
+            <span className={`tag ${estadoTag(entrada.estado)}`}>
+              {entrada.estado}
+            </span>
+            <span className="tag tag-cyan">{entrada.tipoEntrada}</span>
+          </div>
         </div>
 
-        <h3>{entrada.evento?.nombre ?? "Evento"}</h3>
-
         <p className="ticket-location">
-          {entrada.evento?.recinto?.nombre},{" "}
-          {entrada.evento?.recinto?.ciudad}
+          {evento?.recinto?.nombre ?? "Recinto pendiente"},{" "}
+          {evento?.recinto?.ciudad ?? "Ciudad pendiente"}
         </p>
 
-        <div className="ticket-grid">
+        <div className="ticket-info-grid">
+          <div>
+            <span>Nº entrada</span>
+            <strong>#{entrada.id}</strong>
+          </div>
+
+          <div>
+            <span>Fecha</span>
+            <strong>{formatFecha(evento?.fechaInicio)}</strong>
+          </div>
+
           <div>
             <span>Precio</span>
             <strong>{entrada.precio}€</strong>
           </div>
 
           <div>
-            <span>Entrada</span>
-            <strong>#{entrada.id}</strong>
-          </div>
-        </div>
-
-        <div className="ticket-qr-box">
-          <div className="ticket-fake-qr">
-            {entrada.codigoQr}
+            <span>Código</span>
+            <strong>{entrada.codigoQr}</strong>
           </div>
         </div>
 
         <div className="ticket-footer">
           <span>{entrada.codigoQr}</span>
 
-          {entrada.evento?.id && (
-            <Link to={`/eventos/${entrada.evento.id}`} className="btn btn-secondary btn-sm">
+          {evento?.id && (
+            <Link to={`/eventos/${evento.id}`} className="btn btn-secondary btn-sm">
               Ver evento
             </Link>
           )}
         </div>
+      </div>
+
+      <div className="ticket-qr-panel">
+        <div className="ticket-qr-classic">
+          <QRCodeSVG
+            value={entrada.codigoQr}
+            size={132}
+            bgColor="#ffffff"
+            fgColor="#000000"
+            level="H"
+            includeMargin
+          />
+        </div>
+
+        <span>SCAN TO ENTER</span>
       </div>
     </article>
   );
