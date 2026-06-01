@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [cargando, setCargando] = useState(false);
@@ -15,12 +14,10 @@ function LoginPage() {
     e.preventDefault();
     setError("");
     setCargando(true);
-
     try {
       await login({ email, password });
       navigate("/");
-    } catch (err) {
-      console.error("Error en login:", err);
+    } catch {
       setError("Credenciales incorrectas");
     } finally {
       setCargando(false);
@@ -28,37 +25,57 @@ function LoginPage() {
   };
 
   return (
-    <section className="page">
-      <div className="container">
-        <div className="card login-card">
-          <h2>Login</h2>
+    <div className="auth-page">
+      <div className="auth-bg" />
+      <div className="auth-card">
+        <h2 className="auth-title">ACCEDER</h2>
+        <p className="auth-subtitle">Accede a tu próxima experiencia.</p>
 
-          <form onSubmit={handleSubmit} className="login-form">
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-field">
+            <label className="form-label">Email</label>
             <input
               type="email"
-              placeholder="Correo electrónico"
+              placeholder="tu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="filter-input"
+              className="form-input"
+              required
+              autoComplete="email"
             />
+          </div>
 
+          <div className="form-field">
+            <label className="form-label">Contraseña</label>
             <input
               type="password"
-              placeholder="Contraseña"
+              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="filter-input"
+              className="form-input"
+              required
+              autoComplete="current-password"
             />
+          </div>
 
-            <button type="submit" className="login-button" disabled={cargando}>
-              {cargando ? "Entrando..." : "Iniciar sesión"}
-            </button>
-          </form>
+          {error && <div className="msg-error"><span>⚠</span> {error}</div>}
 
-          {error && <p className="error-message">{error}</p>}
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={cargando}
+            style={{ width: "100%", marginTop: 8 }}
+          >
+            {cargando ? "Entrando..." : "Iniciar sesión"}
+          </button>
+        </form>
+
+        <div className="auth-footer">
+          ¿No tienes cuenta?{" "}
+          <Link to="/register">Crear cuenta</Link>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
 

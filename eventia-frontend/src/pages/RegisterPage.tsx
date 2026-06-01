@@ -1,17 +1,15 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 function RegisterPage() {
   const navigate = useNavigate();
   const { register } = useAuth();
-
   const [nombre, setNombre] = useState("");
   const [apellidos, setApellidos] = useState("");
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
   const [password, setPassword] = useState("");
-
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
 
@@ -19,19 +17,10 @@ function RegisterPage() {
     e.preventDefault();
     setError("");
     setCargando(true);
-
     try {
-      await register({
-        nombre,
-        apellidos,
-        email,
-        telefono,
-        password,
-      });
-
+      await register({ nombre, apellidos, email, telefono, password });
       navigate("/perfil");
-    } catch (err) {
-      console.error("Error en register:", err);
+    } catch {
       setError("No se pudo completar el registro");
     } finally {
       setCargando(false);
@@ -39,61 +28,93 @@ function RegisterPage() {
   };
 
   return (
-    <section className="page">
-      <div className="container">
-        <div className="card login-card">
-          <h2>Registro</h2>
+    <div className="auth-page">
+      <div className="auth-bg" />
+      <div className="auth-card" style={{ maxWidth: 480 }}>
+        <h2 className="auth-title">REGISTRO</h2>
+        <p className="auth-subtitle">Crea tu acceso al universo Eventia.</p>
 
-          <form onSubmit={handleSubmit} className="login-form">
-            <input
-              type="text"
-              placeholder="Nombre"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              className="filter-input"
-            />
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            <div className="form-field">
+              <label className="form-label">Nombre</label>
+              <input
+                type="text"
+                placeholder="Tu nombre"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                className="form-input"
+                required
+              />
+            </div>
+            <div className="form-field">
+              <label className="form-label">Apellidos</label>
+              <input
+                type="text"
+                placeholder="Tus apellidos"
+                value={apellidos}
+                onChange={(e) => setApellidos(e.target.value)}
+                className="form-input"
+                required
+              />
+            </div>
+          </div>
 
-            <input
-              type="text"
-              placeholder="Apellidos"
-              value={apellidos}
-              onChange={(e) => setApellidos(e.target.value)}
-              className="filter-input"
-            />
-
+          <div className="form-field">
+            <label className="form-label">Email</label>
             <input
               type="email"
-              placeholder="Correo electrónico"
+              placeholder="tu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="filter-input"
+              className="form-input"
+              required
+              autoComplete="email"
             />
+          </div>
 
+          <div className="form-field">
+            <label className="form-label">Teléfono</label>
             <input
               type="text"
-              placeholder="Teléfono"
+              placeholder="600 000 000"
               value={telefono}
               onChange={(e) => setTelefono(e.target.value)}
-              className="filter-input"
+              className="form-input"
             />
+          </div>
 
+          <div className="form-field">
+            <label className="form-label">Contraseña</label>
             <input
               type="password"
-              placeholder="Contraseña"
+              placeholder="Mínimo 6 caracteres"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="filter-input"
+              className="form-input"
+              required
+              autoComplete="new-password"
             />
+          </div>
 
-            <button type="submit" className="login-button" disabled={cargando}>
-              {cargando ? "Registrando..." : "Crear cuenta"}
-            </button>
-          </form>
+          {error && <div className="msg-error"><span>⚠</span> {error}</div>}
 
-          {error && <p className="error-message">{error}</p>}
+          <button
+            type="submit"
+            className="btn btn-acid"
+            disabled={cargando}
+            style={{ width: "100%", marginTop: 8 }}
+          >
+            {cargando ? "Creando cuenta..." : "Crear cuenta"}
+          </button>
+        </form>
+
+        <div className="auth-footer">
+          ¿Ya tienes cuenta?{" "}
+          <Link to="/login">Iniciar sesión</Link>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
 
