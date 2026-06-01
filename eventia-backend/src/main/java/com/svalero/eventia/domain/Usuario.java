@@ -1,5 +1,6 @@
 package com.svalero.eventia.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.svalero.eventia.domain.enums.RolUsuario;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -58,8 +59,10 @@ public class Usuario {
 
 
     @OneToMany(mappedBy = "organizador")
+    @JsonIgnore
     private List<Evento> eventosOrganizados;
 
     @OneToMany(mappedBy = "usuario")
+    @JsonIgnore
     private List<Reserva> reservas;
 }
