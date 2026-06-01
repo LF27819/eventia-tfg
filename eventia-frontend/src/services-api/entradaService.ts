@@ -12,16 +12,16 @@ export const getEntradaById = async (id: number): Promise<Entrada> => {
 };
 
 export const getEntradasByReserva = async (
-  idReserva: number
+  reservaId: number
 ): Promise<Entrada[]> => {
-  const response = await api.get(`/entradas?reserva=${idReserva}`);
+  const response = await api.get(`/entradas?reservaId=${reservaId}`);
   return response.data;
 };
 
 export const getEntradasByEvento = async (
-  idEvento: number
+  eventoId: number
 ): Promise<Entrada[]> => {
-  const response = await api.get(`/entradas?evento=${idEvento}`);
+  const response = await api.get(`/entradas?eventoId=${eventoId}`);
   return response.data;
 };
 

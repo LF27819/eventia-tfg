@@ -67,6 +67,13 @@ function Navigation() {
               </NavLink>
             </li>
           )}
+          {user && esUsuario(user.rol) && (
+            <li>
+              <NavLink to="/mis-entradas" className="nav-link">
+                Mis entradas
+              </NavLink>
+            </li>
+          )}
         </ul>
 
         <div className="nav-session">
