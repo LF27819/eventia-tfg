@@ -1,5 +1,6 @@
 package com.svalero.eventia.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -59,5 +60,6 @@ public class Artista {
 
 
     @ManyToMany(mappedBy = "artistas")
+    @JsonIgnore
     private List<Evento> eventos;
 }

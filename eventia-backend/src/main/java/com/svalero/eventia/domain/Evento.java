@@ -1,5 +1,6 @@
 package com.svalero.eventia.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.svalero.eventia.domain.enums.EstadoEvento;
 import com.svalero.eventia.domain.enums.TipoEvento;
 import jakarta.persistence.*;
@@ -87,8 +88,10 @@ public class Evento {
     private List<Artista> artistas;
 
     @OneToMany(mappedBy = "evento")
+    @JsonIgnore
     private List<Reserva> reservas;
 
     @OneToMany(mappedBy = "evento")
+    @JsonIgnore
     private List<Entrada> entradas;
     }
