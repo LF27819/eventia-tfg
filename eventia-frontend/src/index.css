@@ -1265,6 +1265,112 @@ img { max-width: 100%; display: block; }
   }
 }
 
+/* ── Compra entardas ───────────────────────────────────────── */
+.booking-panel {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(204,255,0,0.08), transparent 30%),
+    radial-gradient(circle at 90% 80%, rgba(0,245,255,0.08), transparent 30%),
+    var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-top: 16px;
+  box-shadow: var(--shadow-card);
+}
+
+.booking-panel h4 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  letter-spacing: 0.04em;
+  color: var(--neon-acid);
+  margin: 18px 0 8px;
+}
+
+.booking-panel p {
+  color: var(--text-muted);
+  max-width: 520px;
+}
+
+.booking-box {
+  background: rgba(6, 6, 8, 0.45);
+  border: 1px solid rgba(204,255,0,0.16);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.booking-row,
+.booking-total {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.booking-row strong {
+  color: var(--text-primary);
+}
+
+.booking-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 22px 0;
+}
+
+.booking-counter button {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--neon-cyan);
+  background: transparent;
+  color: var(--neon-cyan);
+  font-size: 1.3rem;
+  transition: all var(--transition-fast);
+}
+
+.booking-counter button:hover:not(:disabled) {
+  background: rgba(0,245,255,0.08);
+  box-shadow: var(--shadow-neon-cyan);
+}
+
+.booking-counter button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.booking-counter span {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  min-width: 44px;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.booking-total {
+  border-bottom: none;
+  margin-bottom: 16px;
+}
+
+.booking-total strong {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  color: var(--neon-acid);
+}
+
+@media (max-width: 768px) {
+  .booking-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 768px) {
   .hero-stats { flex-direction: column; gap: 24px; }

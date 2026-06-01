@@ -1,5 +1,5 @@
 import api from "./api";
-import type { Reserva } from "../types/reserva";
+import type { Reserva, EstadoReserva } from "../types/reserva";
 
 export interface CrearReservaRequest {
   cantidadEntradas: number;
@@ -22,9 +22,23 @@ export const getReservaById = async (id: number): Promise<Reserva> => {
 };
 
 export const getReservasByUsuario = async (
-  idUsuario: number
+  usuarioId: number
 ): Promise<Reserva[]> => {
-  const response = await api.get(`/reservas?usuario=${idUsuario}`);
+  const response = await api.get(`/reservas?usuarioId=${usuarioId}`);
+  return response.data;
+};
+
+export const getReservasByEvento = async (
+  eventoId: number
+): Promise<Reserva[]> => {
+  const response = await api.get(`/reservas?eventoId=${eventoId}`);
+  return response.data;
+};
+
+export const getReservasByEstado = async (
+  estado: EstadoReserva
+): Promise<Reserva[]> => {
+  const response = await api.get(`/reservas?estado=${estado}`);
   return response.data;
 };
 
