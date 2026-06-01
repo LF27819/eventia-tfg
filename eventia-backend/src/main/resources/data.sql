@@ -145,92 +145,92 @@ VALUES
 -- Recinto: Fabrik (Madrid)
 ('Nexus Festival',
  'El mayor festival de Hardstyle y Hardcore del país con múltiples escenarios simultáneos y los mejores artistas internacionales de la escena hard.',
- 'FESTIVAL', '2026-06-13 16:00:00', '2026-06-14 06:00:00', 45.00, 10000, 18, 10000, 'PUBLICADO', NULL,1,1),
+ 'FESTIVAL', '2026-06-13 16:00:00', '2026-06-14 06:00:00', 45.00, 10000, 18, 10000, 'PUBLICADO', 'https://res.cloudinary.com/duvblfyfl/image/upload/v1780334570/Nexus-Madrid-1_eo978g.jpg',1,1),
 
 -- Recinto: Desierto de los Monegros (Huesca)
 ('Monegros Desert Festival',
  'Experiencia radical de 22 horas de música electrónica ininterrumpida en mitad del desierto, uniendo arquitectura efímera y sonido de vanguardia.',
- 'FESTIVAL', '2026-07-25 14:00:00', '2026-07-26 12:00:00', 85.00, 50000, 18, 50000, 'PUBLICADO', NULL,2,1),
+ 'FESTIVAL', '2026-07-25 14:00:00', '2026-07-26 12:00:00', 85.00, 50000, 18, 50000, 'PUBLICADO', 'https://res.cloudinary.com/duvblfyfl/image/upload/v1780336130/monegros-desert_igrqyr.webp',2,1),
 
 -- Recinto: Ciudad Deportiva Guillermo Amor / RBF Benidorm (Alicante)
 ('Reggaeton Beach Festival Benidorm',
  'El mayor festival playero de música urbana del verano con actuaciones en directo de las estrellas mundiales del reggaetón y atracciones acuáticas.',
- 'FESTIVAL', '2026-07-11 12:00:00', '2026-07-12 23:59:00', 70.00, 30000, 16, 30000, 'PUBLICADO', NULL,10,1),
+ 'FESTIVAL', '2026-07-11 12:00:00', '2026-07-12 23:59:00', 70.00, 30000, 16, 30000, 'PUBLICADO', 'https://res.cloudinary.com/duvblfyfl/image/upload/q_auto/f_auto/v1780336129/rbf_qigxaj.jpg',10,1),
 
 -- Recinto: Coliseum (Huesca)
 ('La Romana - Coliseum',
  'La mítica e histórica fiesta anual de la catedral del Hardcore en Aragón. Una noche dedicada al sonido remember, la mákina y el sonido tradicional del club.',
- 'SESION', '2026-10-11 23:00:00', '2026-10-12 06:30:00', 20.00, 2500, 18, 2500, 'PUBLICADO', NULL,8,1),
+ 'SESION', '2026-10-11 23:00:00', '2026-10-12 06:30:00', 20.00, 2500, 18, 2500, 'PUBLICADO', 'https://res.cloudinary.com/duvblfyfl/image/upload/q_auto/f_auto/v1780336130/coli_kp46wz.jpg',8,1),
 
 -- Recinto: Sala Oasis (Zaragoza)
 ('Lia Kali en Concierto',
  'Presentación íntima en directo de su aclamado álbum. Una noche de rap, soul y tintes de jazz con su desgarradora voz en el corazón de Zaragoza.',
- 'CONCIERTO', '2026-11-14 21:00:00', '2026-11-14 23:30:00', 18.00, 900, 16, 900, 'PUBLICADO', NULL,31,1),
+ 'CONCIERTO', '2026-11-14 21:00:00', '2026-11-14 23:30:00', 18.00, 900, 16, 900, 'PUBLICADO', 'https://res.cloudinary.com/duvblfyfl/image/upload/q_auto/f_auto/v1780336130/liakali_q91vqg.webp',31,1),
 
 -- Recinto: Espacio Zity (Zaragoza)
 ('Quevedo - Gira Oficial',
  'El regreso de la estrella urbana a Zaragoza en el marco de las Fiestas del Pilar. Un concierto multitudinario repasando todos sus éxitos mundiales.',
- 'CONCIERTO', '2026-10-09 22:00:00', '2026-10-10 00:30:00', 35.00, 25000, 16, 25000, 'PUBLICADO', NULL,30, 1),
+ 'CONCIERTO', '2026-10-09 22:00:00', '2026-10-10 00:30:00', 35.00, 25000, 16, 25000, 'PUBLICADO', 'https://res.cloudinary.com/duvblfyfl/image/upload/q_auto/f_auto/v1780336130/quevedo_t4b5nz.jpg',30, 1),
 
 -- Recinto: La Riviera (Madrid)
 ('Delaossa - Tour Madrid',
  'Directo contundente del rapero malagueño presentando sus últimos lanzamientos en la capital, acompañado de artistas invitados de la escena.',
- 'CONCIERTO', '2026-11-20 20:30:00', '2026-11-20 23:00:00', 22.00, 2500, 16, 2500, 'PUBLICADO', NULL,20,1),
+ 'CONCIERTO', '2026-11-20 20:30:00', '2026-11-20 23:00:00', 22.00, 2500, 16, 2500, 'PUBLICADO', 'https://res.cloudinary.com/duvblfyfl/image/upload/q_auto/f_auto/v1780336130/delaossa_m3vwwi.png',20,1),
 
 -- Recinto: Recinto Medusa Festival (Valencia)
 ('Medusa Sunbeach Festival 2026',
  'El mayor festival de música electrónica de la costa este. Tres días de locura con escenarios gigantescos dedicados al hardstyle, techno y remember en primera línea de playa.',
- 'FESTIVAL', '2026-08-07 16:00:00', '2026-08-10 06:00:00', 80.00, 60000, 18, 60000, 'PUBLICADO', NULL,26,1),
+ 'FESTIVAL', '2026-08-07 16:00:00', '2026-08-10 06:00:00', 80.00, 60000, 18, 60000, 'PUBLICADO', 'https://res.cloudinary.com/duvblfyfl/image/upload/q_auto/f_auto/v1780336129/medusa_xzlurn.jpg',26,1),
 
 -- Recinto: IFEMA Madrid (Madrid)
 ('Madrid Salvaje 2026',
  'El festival de referencia absoluto para la cultura urbana en la capital. Dos jornadas consecutivas con los mayores exponentes del rap, trap y reggae nacional.',
- 'FESTIVAL', '2026-09-25 15:00:00', '2026-09-27 02:00:00', 45.00, 35000, 16, 35000, 'BORRADOR', NULL,12,1),
+ 'FESTIVAL', '2026-09-25 15:00:00', '2026-09-27 02:00:00', 45.00, 35000, 16, 35000, 'BORRADOR', 'https://res.cloudinary.com/duvblfyfl/image/upload/q_auto/f_auto/v1780336129/madid_o1yxcm.webp',12,1),
 
 -- Recinto: Fabrik (Madrid)
 ('CODE - Aniversario Techno',
  'La sesión de techno underground por excelencia de Fabrik. Una maratón de más de 12 horas con los DJs internacionales de techno e industrial más cotizados del planeta repartidos en todas sus áreas.',
- 'SESION', '2026-11-14 18:00:00', '2026-11-15 06:00:00', 30.00, 10000, 18, 10000, 'BORRADOR', NULL,1,1),
+ 'SESION', '2026-11-14 18:00:00', '2026-11-15 06:00:00', 30.00, 10000, 18, 10000, 'BORRADOR', 'https://res.cloudinary.com/duvblfyfl/image/upload/q_auto/f_auto/v1780336130/code_m66rys.jpg',1,1),
 
 -- Recinto: Sala López (Zaragoza)
 ('Sharif - Gira de Salas',
  'El rapero zaragozano vuelve a casa en formato íntimo. Una noche de rimas elegantes, métrica cuidada y pura poesía urbana a orillas del Ebro.',
- 'CONCIERTO', '2026-12-04 21:00:00', '2026-12-04 23:30:00', 15.00, 350, 16, 350, 'BORRADOR', NULL,32,1),
+ 'CONCIERTO', '2026-12-04 21:00:00', '2026-12-04 23:30:00', 15.00, 350, 16, 350, 'BORRADOR', 'https://res.cloudinary.com/duvblfyfl/image/upload/q_auto/f_auto/v1780336131/sharif_z9e8ab.png',32,1),
 
 -- Recinto: Sala Apolo (Barcelona)
 ('Foyone - Presidente Tour',
  'El reptiliano de Málaga aterriza en Barcelona con su rap crudo, directo y sus brutales sesiones "Sin Corte" en vivo sobre el escenario de la emblemática Apolo.',
- 'CONCIERTO', '2026-10-23 20:30:00', '2026-10-23 23:00:00', 18.00, 1600, 16, 1600, 'PUBLICADO', NULL,21,1),
+ 'CONCIERTO', '2026-10-23 20:30:00', '2026-10-23 23:00:00', 18.00, 1600, 16, 1600, 'PUBLICADO', 'https://res.cloudinary.com/duvblfyfl/image/upload/q_auto/f_auto/v1780336130/foyone_fseux8.png',21,1),
 
 -- Recinto: INPUT High Fidelity Dance Club (Barcelona)
 ('Amelie Lens Extended Set',
  'Una experiencia de clubbing exclusiva. La reina del techno belga pincha en un formato íntimo con el sistema de sonido envolvente Funktion-One de INPUT.',
- 'SESION', '2026-09-11 23:59:00', '2026-09-12 06:00:00', 25.00, 1000, 18, 1000, 'PUBLICADO', NULL,28, 1),
+ 'SESION', '2026-09-11 23:59:00', '2026-09-12 06:00:00', 25.00, 1000, 18, 1000, 'PUBLICADO', 'https://res.cloudinary.com/duvblfyfl/image/upload/q_auto/f_auto/v1780336130/amelie_qgopus.webp',28, 1),
 
 -- Recinto: Estadio Santiago Bernabéu (Madrid)
 ('Bad Bunny - Most Wanted Tour',
  'El concierto del año en la capital. El icono mundial del reggaetón y trap latino despliega su colosal producción de estadio en el nuevo Bernabéu.',
- 'CONCIERTO', '2026-07-18 21:30:00', '2026-07-19 00:30:00', 65.00, 75000, 16, 75000, 'PUBLICADO', NULL,18,1),
+ 'CONCIERTO', '2026-07-18 21:30:00', '2026-07-19 00:30:00', 65.00, 75000, 16, 75000, 'PUBLICADO', 'https://res.cloudinary.com/duvblfyfl/image/upload/q_auto/f_auto/v1780336130/badbu_jvflu0.jpg',18,1),
 
 -- Recinto: Spook Multiespacio (Valencia)
 ('Masters of Hardcore - Valencia Edition',
  'La marca de hardcore más grande del planeta asalta el templo levantino. BPMs al límite, bombos distorsionados y un cartel internacional de infarto.',
- 'SESION', '2026-12-05 23:00:00', '2026-12-06 07:00:00', 35.00, 4000, 18, 4000, 'PUBLICADO', NULL,9,1),
+ 'SESION', '2026-12-05 23:00:00', '2026-12-06 07:00:00', 35.00, 4000, 18, 4000, 'PUBLICADO', 'https://res.cloudinary.com/duvblfyfl/image/upload/q_auto/f_auto/v1780336129/mof_riwf2u.webp',9,1),
 
 -- Recinto: WiZink Center (Madrid)
 ('Aitana - Alpha Tour Arena',
  'La estrella del pop nacional regresa al WiZink Center con su show más electrónico y bailable, repleto de luces, coreografías y hits generacionales.',
- 'CONCIERTO', '2026-10-16 21:00:00', '2026-10-16 23:15:00', 40.00, 17453, 14, 17453, 'PUBLICADO', NULL,16,1),
+ 'CONCIERTO', '2026-10-16 21:00:00', '2026-10-16 23:15:00', 40.00, 17453, 14, 17453, 'PUBLICADO', 'https://res.cloudinary.com/duvblfyfl/image/upload/q_auto/f_auto/v1780336129/aitana_fud4mx.jpg',16,1),
 
 -- Recinto: Camping Municipal de Zaragoza (Zaragoza)
 ('Lagata Reggae Festival 2026',
  'El festival aragonés de cultura jamaicana por excelencia. Tres días de música reggae, rap de corte social, dancehall, talleres y acampada en un entorno natural rodeado de árboles.',
- 'FESTIVAL', '2026-06-26 18:00:00', '2026-06-28 20:00:00', 35.00, 3000, 16, 3000, 'PUBLICADO', NULL,25, 1),
+ 'FESTIVAL', '2026-06-26 18:00:00', '2026-06-28 20:00:00', 35.00, 3000, 16, 3000, 'PUBLICADO', 'https://res.cloudinary.com/duvblfyfl/image/upload/q_auto/f_auto/v1780336130/lagata_pcgkil.png',25, 1),
 
 -- Recinto: Multiespacio Rabasa (Alicante)
 ('Rocanrola Festival 2026',
  'El festival de rap, hip-hop y cultura urbana más grande de España. Dos días de conciertos masivos con las leyendas y los nuevos talentos de la escena nacional reunidos en el levante.',
- 'FESTIVAL', '2026-10-09 16:00:00', '2026-10-11 02:00:00', 50.00, 15000, 16, 15000, 'CANCELADO', NULL, 24,1);
+ 'FESTIVAL', '2026-10-09 16:00:00', '2026-10-11 02:00:00', 50.00, 15000, 16, 15000, 'CANCELADO', 'https://res.cloudinary.com/duvblfyfl/image/upload/q_auto/f_auto/v1780336129/rocanrola_jj7naw.jpg', 24,1);
 
 
 
