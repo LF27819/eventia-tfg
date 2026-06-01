@@ -1,106 +1,159 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import type { Event } from "../../types/event";
-import { useAuth } from "../../context/AuthContext";
-import { createReserva } from "../../api/bookingService";
 import { Link } from "react-router-dom";
+import type { CSSProperties } from "react";
+import type { Evento, TipoEvento, EstadoEvento } from "../../types/evento";
 
 interface EventCardProps {
-  evento: Event;
+  evento: Evento;
+  style?: CSSProperties;
 }
 
-function EventCard({ evento }: EventCardProps) {
-  const { user, updateUser } = useAuth();
-  const navigate = useNavigate();
+function formatFecha(fecha: string): string {
+  return new Date(fecha).toLocaleDateString("es-ES", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
 
-  const [reservando, setReservando] = useState(false);
-  const [error, setError] = useState("");
+function formatHora(fecha: string): string {
+  return new Date(fecha).toLocaleTimeString("es-ES", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
-  const handleReservar = async () => {
-    if (!user?.id) {
-      navigate("/login");
-      return;
-    }
+function tipoEventoTag(tipo: TipoEvento): string {
+  switch (tipo) {
+    case "FESTIVAL":
+      return "tag-acid";
+    case "CONCIERTO":
+      return "tag-cyan";
+    case "SESION":
+      return "tag-magenta";
+    default:
+      return "tag-purple";
+  }
+}
 
-    const precioTotal = evento.precioEntrada;
+function estadoEventoTag(estado: EstadoEvento): string {
+  switch (estado) {
+    case "PUBLICADO":
+      return "tag-cyan";
+    case "BORRADOR":
+      return "tag-muted";
+    case "CANCELADO":
+      return "tag-orange";
+    case "FINALIZADO":
+      return "tag-purple";
+    default:
+      return "tag-muted";
+  }
+}
 
-    if (user.saldoCuenta < precioTotal) {
-      setError("Saldo insuficiente. Añade saldo en tu perfil.");
-      return;
-    }
-
-    setReservando(true);
-    setError("");
-
-    try {
-      await createReserva({
-        fechaReserva: new Date().toISOString().slice(0, 19),
-        cantidadEntradas: 1,
-        precioTotal,
-        metodoPago: "TARJETA",
-        codigoReserva: `RES-${Date.now()}`,
-        confirmada: true,
-        usuario: { id: user.id },
-        evento: { id: evento.id },
-      });
-
-      updateUser({
-        saldoCuenta: user.saldoCuenta - precioTotal,
-      });
-
-      navigate("/mis-reservas");
-    } catch (error) {
-      console.error("Error al reservar:", error);
-      setError("No se pudo realizar la reserva");
-    } finally {
-      setReservando(false);
-    }
-  };
+function EventCard({ evento, style }: EventCardProps) {
+  const ticketsLow =
+    evento.entradasDisponibles > 0 && evento.entradasDisponibles < 50;
 
   return (
-    <article className="card event-card">
-      <span className="event-category">{evento.categoria}</span>
+    <article className="card card-glow-cyan event-card" style={style}>
+      <div className="event-card-header">
+        {evento.imagenUrl ? (
+          <img
+            src={evento.imagenUrl}
+            alt={evento.nombre}
+            className="event-card-img"
+          />
+        ) : (
+          <div className="event-card-placeholder">{evento.tipoEvento}</div>
+        )}
 
-      <h3 className="title-events">
-        <Link to={`/eventos/${evento.id}`}>{evento.nombre}</Link>
-      </h3>
+        <div className="event-card-header-overlay" />
 
-      <p>{evento.descripcion}</p>
+        <div
+          style={{
+            position: "absolute",
+            top: 12,
+            left: 16,
+            display: "flex",
+            gap: 6,
+            flexWrap: "wrap",
+          }}
+        >
+          <span className={`tag ${tipoEventoTag(evento.tipoEvento)}`}>
+            {evento.tipoEvento}
+          </span>
 
-      <p>
-        <strong>Fecha:</strong>{" "}
-        {new Date(evento.fechaEvento).toLocaleDateString("es-ES")}
-      </p>
-
-      <p>
-        <strong>Hora:</strong> {evento.horaEvento.slice(0, 5)}
-      </p>
-
-      <p>
-        <strong>Precio:</strong> {evento.precioEntrada} €
-      </p>
-
-      <p>
-        <strong>Entradas disponibles:</strong> {evento.entradasDisponibles}
-      </p>
-
-      <p>
-        <strong>Estado:</strong> {evento.cancelado ? "Cancelado" : "Activo"}
-      </p>
-
-      {user?.rol === "CLIENTE" && (
-        <div className="event-actions">
-          <button
-            className="reserve-button"
-            onClick={handleReservar}
-            disabled={reservando}
-          >
-            {reservando ? "Reservando..." : "Reservar"}
-          </button>
+          {evento.estado !== "PUBLICADO" && (
+            <span className={`tag ${estadoEventoTag(evento.estado)}`}>
+              {evento.estado}
+            </span>
+          )}
         </div>
-      )}
+      </div>
 
-      {error && <p className="event-message">{error}</p>}
+      <div className="event-card-body">
+        <div className="event-card-top">
+          <Link to={`/eventos/${evento.id}`} className="event-card-title">
+            {evento.nombre}
+          </Link>
+
+          <span className="event-card-price">
+            {evento.precioBase === 0 ? "FREE" : `${evento.precioBase}€`}
+          </span>
+        </div>
+
+        <div className="event-card-meta">
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.75rem",
+              color: "var(--neon-cyan)",
+              opacity: 0.85,
+            }}
+          >
+            {formatFecha(evento.fechaInicio)} · {formatHora(evento.fechaInicio)}
+          </span>
+        </div>
+
+        {evento.recinto && (
+          <p className="event-card-venue">
+            📍 {evento.recinto.nombre}, {evento.recinto.ciudad}
+          </p>
+        )}
+
+        {evento.artistas && evento.artistas.length > 0 && (
+          <div className="event-card-artists">
+            {evento.artistas.slice(0, 4).map((artista) => (
+              <span key={artista.id} className="event-card-artist">
+                {artista.nombreArtistico}
+              </span>
+            ))}
+
+            {evento.artistas.length > 4 && (
+              <span
+                style={{
+                  fontSize: "0.72rem",
+                  color: "var(--text-dim)",
+                }}
+              >
+                +{evento.artistas.length - 4} más
+              </span>
+            )}
+          </div>
+        )}
+
+        <div className="event-card-footer">
+          <span className={`event-card-tickets ${ticketsLow ? "low" : ""}`}>
+            {evento.entradasDisponibles <= 0
+              ? "AGOTADO"
+              : `${evento.entradasDisponibles} entradas`}
+          </span>
+
+          <Link to={`/eventos/${evento.id}`} className="btn btn-secondary btn-sm">
+            Descubrir
+          </Link>
+        </div>
+      </div>
     </article>
   );
 }
