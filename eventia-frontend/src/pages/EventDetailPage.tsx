@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { getEventoById } from "../services-api/eventoService";
 import type { Evento, EstadoEvento, TipoEvento } from "../types/evento";
 import Loading from "../components/ui/Loading";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 
 function tipoEventoTag(tipo: TipoEvento): string {
   switch (tipo) {
@@ -221,71 +222,41 @@ function EventDetailPage() {
               </>
             )}
 
-            {evento.recinto && (
+            {evento.recinto?.latitud && evento.recinto?.longitud && (
               <>
-                <h3 className="detail-section-title">RECINTO</h3>
+                <h3 className="detail-section-title">UBICACIÓN DEL RECINTO </h3>
 
-                <div
-                  style={{
-                    background: "var(--bg-elevated)",
-                    border: "1px solid var(--border-subtle)",
-                    borderRadius: "var(--radius-md)",
-                    padding: "20px",
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: "24px",
-                  }}
-                >
-                  <div>
-                    <div
-                      style={{
-                        fontFamily: "var(--font-display)",
-                        fontSize: "1.2rem",
-                        letterSpacing: "0.03em",
-                        color: "var(--neon-cyan)",
-                        marginBottom: 4,
-                      }}
-                    >
-                      {evento.recinto.nombre}
-                    </div>
-
-                    <div
-                      style={{
-                        fontFamily: "var(--font-mono)",
-                        fontSize: "0.76rem",
-                        color: "var(--text-muted)",
-                        letterSpacing: "0.06em",
-                      }}
-                    >
-                      {evento.recinto.direccion}, {evento.recinto.ciudad}
-                    </div>
+                <div className="location-panel">
+                  <div className="location-info">
+                    <h4>{evento.recinto.nombre}</h4>
+                    <p>{evento.recinto.direccion}</p>
+                    <p>
+                      {evento.recinto.ciudad}, {evento.recinto.provincia}
+                    </p>
                   </div>
 
-                  {evento.recinto.aforo > 0 && (
-                    <div>
-                      <div
-                        style={{
-                          fontFamily: "var(--font-display)",
-                          fontSize: "1.2rem",
-                          color: "var(--neon-magenta)",
-                        }}
-                      >
-                        {evento.recinto.aforo.toLocaleString()}
-                      </div>
+                  <div className="map-wrapper map-wrapper-neon">
+                    <MapContainer
+                      center={[evento.recinto.latitud, evento.recinto.longitud]}
+                      zoom={15}
+                      className="event-map"
+                    >
+                      <TileLayer
+                        attribution='&copy; OpenStreetMap contributors'
+                        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                      />
 
-                      <div
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "0.68rem",
-                          color: "var(--text-dim)",
-                          letterSpacing: "0.12em",
-                          textTransform: "uppercase",
-                        }}
-                      >
-                        Aforo
-                      </div>
-                    </div>
-                  )}
+                      <Marker position={[evento.recinto.latitud, evento.recinto.longitud]}>
+                        <Popup>
+                          <strong>{evento.nombre}</strong>
+                          <br />
+                          {evento.recinto.nombre}
+                          <br />
+                          {evento.recinto.direccion}
+                        </Popup>
+                      </Marker>
+                    </MapContainer>
+                  </div>
                 </div>
               </>
             )}
