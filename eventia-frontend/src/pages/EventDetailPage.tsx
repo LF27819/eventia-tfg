@@ -1,38 +1,72 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import { getEventoById } from "../api/eventService";
-import type { Event } from "../types/event";
+import { useParams, Link } from "react-router-dom";
+import { getEventoById } from "../services-api/eventoService";
+import type { Evento, EstadoEvento, TipoEvento } from "../types/evento";
+import Loading from "../components/ui/Loading";
 
-const coordenadasRecintos: Record<string, [number, number]> = {
-  "WiZink Center": [40.4239, -3.6716],
-  "Palau Sant Jordi": [41.3635, 2.1527],
-  "Ciudad de las Artes Stage": [39.4548, -0.3505],
-  "Cartuja Center": [37.4114, -6.0061],
-  "Bilbao Arena": [43.2525, -2.9253],
-  "Pabellón Príncipe Felipe": [41.6387, -0.8872],
-  "Auditorio Cortijo de Torres": [36.6897, -4.4644],
-  "Palacio de Deportes Granada": [37.1526, -3.5962],
-  "Plaza de Toros Alicante": [38.3506, -0.4836],
-  "Cuartel de Artillería": [37.9834, -1.1287],
-};
+function tipoEventoTag(tipo: TipoEvento): string {
+  switch (tipo) {
+    case "FESTIVAL":
+      return "tag-acid";
+    case "CONCIERTO":
+      return "tag-cyan";
+    case "SESION":
+      return "tag-magenta";
+    default:
+      return "tag-purple";
+  }
+}
+
+function estadoEventoTag(estado: EstadoEvento): string {
+  switch (estado) {
+    case "PUBLICADO":
+      return "tag-cyan";
+    case "BORRADOR":
+      return "tag-muted";
+    case "CANCELADO":
+      return "tag-orange";
+    case "FINALIZADO":
+      return "tag-purple";
+    default:
+      return "tag-muted";
+  }
+}
+
+function formatFecha(fecha: string): string {
+  return new Date(fecha).toLocaleDateString("es-ES", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function formatHora(fecha: string): string {
+  return new Date(fecha).toLocaleTimeString("es-ES", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 function EventDetailPage() {
   const { id } = useParams();
-  const [evento, setEvento] = useState<Event | null>(null);
+  const [evento, setEvento] = useState<Evento | null>(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const cargarEvento = async () => {
-      if (!id) return;
+      if (!id) {
+        setError("Evento no encontrado");
+        setCargando(false);
+        return;
+      }
 
       try {
-        const data = await getEventoById(id);
+        const data = await getEventoById(Number(id));
         setEvento(data);
-      } catch (err) {
-        console.error("Error al cargar detalle del evento:", err);
-        setError("No se pudo cargar el detalle del evento");
+      } catch (error) {
+        console.error("Error al cargar evento:", error);
+        setError("No se pudo cargar el evento");
       } finally {
         setCargando(false);
       }
@@ -41,83 +75,221 @@ function EventDetailPage() {
     cargarEvento();
   }, [id]);
 
-  if (cargando) return <p>Cargando evento...</p>;
-  if (error) return <p className="error-message">{error}</p>;
-  if (!evento) return <p>No se encontró el evento.</p>;
+  if (cargando) {
+    return (
+      <section className="page">
+        <div className="container">
+          <Loading text="Cargando evento" />
+        </div>
+      </section>
+    );
+  }
 
-  const recintoNombre = evento.recinto?.nombre ?? "";
-  const coords = coordenadasRecintos[recintoNombre];
+  if (error) {
+    return (
+      <section className="page">
+        <div className="container">
+          <div className="msg-error">⚠ {error}</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!evento) {
+    return (
+      <section className="page">
+        <div className="container">
+          <p style={{ color: "var(--text-dim)" }}>Evento no encontrado.</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="page">
       <div className="container">
-        <div className="card detail-card">
-          <span className="event-category">{evento.categoria}</span>
+        <div style={{ marginBottom: 24 }}>
+          <Link
+            to="/eventos"
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.74rem",
+              letterSpacing: "0.12em",
+              color: "var(--text-muted)",
+              textTransform: "uppercase",
+            }}
+          >
+            ← Volver a eventos
+          </Link>
+        </div>
 
-          <h2 className="page-title">{evento.nombre}</h2>
-
-          <p>{evento.descripcion}</p>
-
-          <p>
-            <strong>Fecha:</strong>{" "}
-            {new Date(evento.fechaEvento).toLocaleDateString("es-ES")}
-          </p>
-
-          <p>
-            <strong>Hora:</strong> {evento.horaEvento.slice(0, 5)}
-          </p>
-
-          <p>
-            <strong>Precio:</strong> {evento.precioEntrada} €
-          </p>
-
-          <p>
-            <strong>Modalidad:</strong>{" "}
-            {evento.presencial ? "Presencial" : "Online"}
-          </p>
-
-          {evento.recinto && (
-            <>
-              <h3 className="detail-subtitle">Recinto</h3>
-
-              <p>
-                <strong>Nombre:</strong> {evento.recinto.nombre}
-              </p>
-
-              <p>
-                <strong>Dirección:</strong> {evento.recinto.direccion}
-              </p>
-
-              <p>
-                <strong>Ciudad:</strong> {evento.recinto.ciudad}
-              </p>
-            </>
-          )}
-
-          {coords && (
-            <div className="map-wrapper">
-              <MapContainer
-                center={coords}
-                zoom={15}
-                className="event-map"
-              >
-                <TileLayer
-                  attribution="&copy; OpenStreetMap contributors"
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-
-                <Marker position={coords}>
-                  <Popup>
-                    <strong>{evento.nombre}</strong>
-                    <br />
-                    {evento.recinto?.nombre}
-                    <br />
-                    {evento.recinto?.direccion}
-                  </Popup>
-                </Marker>
-              </MapContainer>
+        <div className="detail-hero">
+          {evento.imagenUrl ? (
+            <img
+              src={evento.imagenUrl}
+              alt={evento.nombre}
+              className="detail-hero-img"
+            />
+          ) : (
+            <div className="detail-hero-placeholder">
+              {evento.tipoEvento} · {evento.nombre.toUpperCase()}
             </div>
           )}
+
+          <div className="detail-content">
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <span className={`tag ${tipoEventoTag(evento.tipoEvento)}`}>
+                {evento.tipoEvento}
+              </span>
+
+              <span className={`tag ${estadoEventoTag(evento.estado)}`}>
+                {evento.estado}
+              </span>
+
+              {evento.edadMinima > 0 && (
+                <span className="tag tag-orange">+{evento.edadMinima}</span>
+              )}
+            </div>
+
+            <h2 className="detail-title">{evento.nombre}</h2>
+
+            <p className="detail-desc">
+              {evento.descripcion || "Una experiencia única dentro de Eventia."}
+            </p>
+
+            <div className="detail-grid">
+              <div className="detail-stat">
+                <div className="detail-stat-value">
+                  {formatFecha(evento.fechaInicio)}
+                </div>
+                <div className="detail-stat-label">Fecha inicio</div>
+              </div>
+
+              <div className="detail-stat">
+                <div
+                  className="detail-stat-value"
+                  style={{ color: "var(--neon-magenta)" }}
+                >
+                  {formatHora(evento.fechaInicio)}
+                </div>
+                <div className="detail-stat-label">Hora</div>
+              </div>
+
+              <div className="detail-stat">
+                <div
+                  className="detail-stat-value"
+                  style={{ color: "var(--neon-acid)" }}
+                >
+                  {evento.precioBase === 0 ? "FREE" : `${evento.precioBase}€`}
+                </div>
+                <div className="detail-stat-label">Precio</div>
+              </div>
+
+              <div className="detail-stat">
+                <div
+                  className="detail-stat-value"
+                  style={{
+                    color:
+                      evento.entradasDisponibles < 50
+                        ? "var(--neon-orange)"
+                        : "var(--neon-cyan)",
+                  }}
+                >
+                  {evento.entradasDisponibles}
+                </div>
+                <div className="detail-stat-label">Entradas disp.</div>
+              </div>
+            </div>
+
+            {evento.artistas && evento.artistas.length > 0 && (
+              <>
+                <h3 className="detail-section-title">CARTEL</h3>
+
+                <div className="artists-list">
+                  {evento.artistas.map((artista) => (
+                    <div key={artista.id} className="artist-chip">
+                      <span>{artista.nombreArtistico}</span>
+
+                      {artista.generoMusical && (
+                        <span className="artist-chip-genre">
+                          {artista.generoMusical}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {evento.recinto && (
+              <>
+                <h3 className="detail-section-title">RECINTO</h3>
+
+                <div
+                  style={{
+                    background: "var(--bg-elevated)",
+                    border: "1px solid var(--border-subtle)",
+                    borderRadius: "var(--radius-md)",
+                    padding: "20px",
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "24px",
+                  }}
+                >
+                  <div>
+                    <div
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: "1.2rem",
+                        letterSpacing: "0.03em",
+                        color: "var(--neon-cyan)",
+                        marginBottom: 4,
+                      }}
+                    >
+                      {evento.recinto.nombre}
+                    </div>
+
+                    <div
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "0.76rem",
+                        color: "var(--text-muted)",
+                        letterSpacing: "0.06em",
+                      }}
+                    >
+                      {evento.recinto.direccion}, {evento.recinto.ciudad}
+                    </div>
+                  </div>
+
+                  {evento.recinto.aforo > 0 && (
+                    <div>
+                      <div
+                        style={{
+                          fontFamily: "var(--font-display)",
+                          fontSize: "1.2rem",
+                          color: "var(--neon-magenta)",
+                        }}
+                      >
+                        {evento.recinto.aforo.toLocaleString()}
+                      </div>
+
+                      <div
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.68rem",
+                          color: "var(--text-dim)",
+                          letterSpacing: "0.12em",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        Aforo
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </section>
