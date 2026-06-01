@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useReducer } from "react";
-import { getEventos } from "../services-api/eventService";
+import { getEventos } from "../api/eventService";
 import SummaryCard from "../components/dashboard/SummaryCard";
 import DashboardFilters from "../components/dashboard/DashboardFilters";
 import EventsDashboardTable from "../components/dashboard/EventsDashboardTable";

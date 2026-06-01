@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { addSaldo } from "../services-api/userService";
+import { addSaldo } from "../api/userService";
 
 function ProfilePage() {
   const { user, updateUser } = useAuth();
