@@ -1,17 +1,51 @@
-import type { Booking } from "../../types/reserva.ts";
+import type { Reserva } from "../../types/reserva";
 
 interface BookingsDashboardTableProps {
-  reservas: Booking[];
+  reservas: Reserva[];
+}
+
+function formatFecha(fecha: string): string {
+  return new Date(fecha).toLocaleDateString("es-ES", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function estadoTag(estado: string): string {
+  switch (estado) {
+    case "CONFIRMADA":
+      return "tag-cyan";
+    case "PENDIENTE":
+      return "tag-orange";
+    case "CANCELADA":
+      return "tag-magenta";
+    default:
+      return "tag-muted";
+  }
 }
 
 function BookingsDashboardTable({ reservas }: BookingsDashboardTableProps) {
   if (reservas.length === 0) {
-    return <p>No hay reservas que coincidan con los filtros.</p>;
+    return (
+      <p
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: "0.82rem",
+          color: "var(--text-dim)",
+          letterSpacing: "0.1em",
+          padding: "32px 0",
+          textAlign: "center",
+        }}
+      >
+        // SIN RESERVAS
+      </p>
+    );
   }
 
   return (
-    <div className="table-wrapper">
-      <table className="dashboard-table">
+    <div className="data-table-wrapper">
+      <table className="data-table">
         <thead>
           <tr>
             <th>Código</th>
@@ -19,7 +53,6 @@ function BookingsDashboardTable({ reservas }: BookingsDashboardTableProps) {
             <th>Fecha reserva</th>
             <th>Entradas</th>
             <th>Total</th>
-            <th>Método</th>
             <th>Estado</th>
           </tr>
         </thead>
@@ -27,15 +60,27 @@ function BookingsDashboardTable({ reservas }: BookingsDashboardTableProps) {
         <tbody>
           {reservas.map((reserva) => (
             <tr key={reserva.id}>
-              <td>{reserva.codigoReserva}</td>
-              <td>{reserva.evento?.nombre ?? "Sin evento"}</td>
-              <td>
-                {new Date(reserva.fechaReserva).toLocaleDateString("es-ES")}
+              <td style={{ fontFamily: "var(--font-mono)", color: "var(--neon-cyan)" }}>
+                {reserva.codigoReserva}
               </td>
+
+              <td>{reserva.evento?.nombre ?? "—"}</td>
+
+              <td style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
+                {formatFecha(reserva.fechaReserva)}
+              </td>
+
               <td>{reserva.cantidadEntradas}</td>
-              <td>{reserva.precioTotal} €</td>
-              <td>{reserva.metodoPago}</td>
-              <td>{reserva.confirmada ? "Confirmada" : "Pendiente"}</td>
+
+              <td style={{ fontFamily: "var(--font-display)", color: "var(--neon-acid)" }}>
+                {reserva.precioTotal}€
+              </td>
+
+              <td>
+                <span className={`tag ${estadoTag(reserva.estado)}`}>
+                  {reserva.estado}
+                </span>
+              </td>
             </tr>
           ))}
         </tbody>

@@ -1,5 +1,6 @@
 package com.svalero.eventia.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.svalero.eventia.domain.enums.EstadoReserva;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -53,5 +54,6 @@ public class Reserva {
     private Evento evento;
 
     @OneToMany(mappedBy = "reserva")
+    @JsonIgnore
     private List<Entrada> entradas;
 }

@@ -4,6 +4,7 @@ import EventsPage from "../pages/EventsPage";
 import EventDetailPage from "../pages/EventDetailPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
+import MyBookingsPage from "../pages/MyBookingsPage";
 
 function AppRouter() {
   return (
@@ -13,6 +14,7 @@ function AppRouter() {
       <Route path="/eventos/:id" element={<EventDetailPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/mis-reservas" element={<MyBookingsPage />} />
     </Routes>
   );
 }

@@ -2,15 +2,25 @@ interface SummaryCardProps {
   title: string;
   value: number | string;
   description?: string;
+  accentColor?: string;
 }
 
-function SummaryCard({ title, value, description }: SummaryCardProps) {
+function SummaryCard({
+  title,
+  value,
+  description,
+  accentColor = "var(--neon-cyan)",
+}: SummaryCardProps) {
   return (
-    <article className="summary-card">
-      <p className="summary-title">{title}</p>
-      <h3>{value}</h3>
-      {description && <p className="summary-description">{description}</p>}
-    </article>
+    <div className="summary-card">
+      <div className="summary-value" style={{ color: accentColor }}>
+        {value}
+      </div>
+
+      <div className="summary-title">{title}</div>
+
+      {description && <div className="summary-desc">{description}</div>}
+    </div>
   );
 }
 
