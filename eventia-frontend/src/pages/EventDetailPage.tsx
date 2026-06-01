@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { getEventoById } from "../services-api/eventoService";
 import type { Evento, EstadoEvento, TipoEvento } from "../types/evento";
 import Loading from "../components/ui/Loading";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { createReserva } from "../services-api/reservaService";
+import { useAuth } from "../context/AuthContext"
 
 function tipoEventoTag(tipo: TipoEvento): string {
   switch (tipo) {
@@ -50,9 +52,14 @@ function formatHora(fecha: string): string {
 
 function EventDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [evento, setEvento] = useState<Evento | null>(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+  const [cantidadEntradas, setCantidadEntradas] = useState(1);
+  const [reservando, setReservando] = useState(false);
+  const [errorReserva, setErrorReserva] = useState("");
 
   useEffect(() => {
     const cargarEvento = async () => {
@@ -105,6 +112,47 @@ function EventDetailPage() {
       </section>
     );
   }
+
+  const totalReserva = cantidadEntradas * evento.precioBase;
+
+  const restarEntrada = () => {
+    setCantidadEntradas((actual) => Math.max(1, actual - 1));
+  };
+
+  const sumarEntrada = () => {
+    setCantidadEntradas((actual) =>
+      Math.min(evento.entradasDisponibles, actual + 1)
+    );
+  };
+
+  const handleReservar = async () => {
+    if (!user?.id) {
+      navigate("/login");
+      return;
+    }
+
+    setReservando(true);
+    setErrorReserva("");
+
+    try {
+      await createReserva({
+        cantidadEntradas,
+        usuario: {
+          id: user.id,
+        },
+        evento: {
+          id: evento.id,
+        },
+      });
+
+      navigate("/mis-reservas");
+    } catch (error) {
+      console.error("Error al reservar:", error);
+      setErrorReserva("No se pudo completar la reserva.");
+    } finally {
+      setReservando(false);
+    }
+  };
 
   return (
     <section className="page">
@@ -256,6 +304,65 @@ function EventDetailPage() {
                         </Popup>
                       </Marker>
                     </MapContainer>
+                  </div>
+                </div>
+                <h3 className="detail-section-title">ENTRADAS</h3>
+
+                <div className="booking-panel">
+                  <div>
+                    <span className="tag tag-acid">RESERVA</span>
+
+                    <h4>Vive esta experiencia</h4>
+
+                    <p>
+                      Elige cuántas entradas quieres reservar. Podrás consultar tus reservas y
+                      entradas desde tu zona privada.
+                    </p>
+                  </div>
+
+                  <div className="booking-box">
+                    <div className="booking-row">
+                      <span>Precio unitario</span>
+                      <strong>{evento.precioBase}€</strong>
+                    </div>
+
+                    <div className="booking-row">
+                      <span>Entradas disponibles</span>
+                      <strong>{evento.entradasDisponibles}</strong>
+                    </div>
+
+                    <div className="booking-counter">
+                      <button type="button" onClick={restarEntrada} disabled={cantidadEntradas <= 1}>
+                        −
+                      </button>
+
+                      <span>{cantidadEntradas}</span>
+
+                      <button
+                        type="button"
+                        onClick={sumarEntrada}
+                        disabled={cantidadEntradas >= evento.entradasDisponibles}
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <div className="booking-total">
+                      <span>Total</span>
+                      <strong>{totalReserva.toFixed(2)}€</strong>
+                    </div>
+
+                    {errorReserva && <div className="msg-error">{errorReserva}</div>}
+
+                    <button
+                      type="button"
+                      className="btn btn-acid"
+                      style={{ width: "100%" }}
+                      onClick={handleReservar}
+                      disabled={reservando || evento.entradasDisponibles <= 0}
+                    >
+                      {reservando ? "Reservando..." : "Reservar entradas"}
+                    </button>
                   </div>
                 </div>
               </>
