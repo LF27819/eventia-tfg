@@ -8,6 +8,7 @@ import MyBookingsPage from "../pages/MyBookingsPage";
 import ProfilePage from "../pages/ProfilePage";
 import AdminPage from "../pages/AdminPage";
 import OrganizerPage from "../pages/OrganizerPage";
+import MyTicketsPage from "../pages/MyTicketsPage";
 
 function AppRouter() {
   return (
@@ -21,6 +22,7 @@ function AppRouter() {
       <Route path="/perfil" element={<ProfilePage />} />
       <Route path="/admin" element={<AdminPage />} />
       <Route path="/organizador" element={<OrganizerPage />} />
+      <Route path="/mis-entradas" element={<MyTicketsPage />} />
 
     </Routes>
   );
