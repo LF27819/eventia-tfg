@@ -1,97 +1,226 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { addSaldo } from "../api/userService";
+import { getReservasByUsuario } from "../services-api/reservaService";
+import type { Reserva } from "../types/reserva";
+import Loading from "../components/ui/Loading";
+import SummaryCard from "../components/dashboard/SummaryCard";
 
 function ProfilePage() {
-  const { user, updateUser } = useAuth();
-  const [cantidad, setCantidad] = useState("");
-  const [mensaje, setMensaje] = useState("");
-  const [cargando, setCargando] = useState(false);
+  const { user } = useAuth();
 
-  if (!user) {
-    return <p>Cargando usuario...</p>;
+  const [reservas, setReservas] = useState<Reserva[]>([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const cargarReservas = async () => {
+      if (!user?.id) {
+        setCargando(false);
+        return;
+      }
+
+      try {
+        const data = await getReservasByUsuario(user.id);
+        setReservas(data);
+      } catch (error) {
+        console.error("Error al cargar perfil:", error);
+        setError("No se pudo cargar la información del perfil.");
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    cargarReservas();
+  }, [user]);
+
+  const iniciales = useMemo(() => {
+    if (!user?.nombre) return "EV";
+
+    return user.nombre
+      .split(" ")
+      .map((parte) => parte[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  }, [user]);
+
+  const gastoTotal = reservas.reduce(
+    (total, reserva) => total + reserva.precioTotal,
+    0
+  );
+
+  const reservasConfirmadas = reservas.filter(
+    (reserva) => reserva.estado === "CONFIRMADA"
+  ).length;
+
+  const proximaReserva = reservas
+    .filter((reserva) => reserva.evento?.fechaInicio)
+    .sort(
+      (a, b) =>
+        new Date(a.evento.fechaInicio).getTime() -
+        new Date(b.evento.fechaInicio).getTime()
+    )[0];
+
+  if (cargando) {
+    return (
+      <section className="page">
+        <div className="container">
+          <Loading text="Cargando perfil" />
+        </div>
+      </section>
+    );
   }
 
-  const handleRecargarSaldo = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setMensaje("");
-
-    const cantidadNumerica = Number(cantidad);
-
-    if (cantidadNumerica <= 0) {
-      setMensaje("Introduce una cantidad válida.");
-      return;
-    }
-
-    if (!user.id) {
-      setMensaje("Usuario no válido.");
-      return;
-    }
-
-    try {
-      setCargando(true);
-
-      const usuarioActualizado = await addSaldo(user.id, cantidadNumerica);
-
-      updateUser({
-        saldoCuenta: usuarioActualizado.saldoCuenta,
-      });
-
-      setCantidad("");
-      setMensaje("Saldo actualizado correctamente.");
-    } catch (error) {
-      console.error("Error al recargar saldo:", error);
-      setMensaje("No se pudo actualizar el saldo.");
-    } finally {
-      setCargando(false);
-    }
-  };
+  if (!user) {
+    return (
+      <section className="page">
+        <div className="container">
+          <div className="msg-error">Debes iniciar sesión para ver tu perfil.</div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="page">
       <div className="container">
-        <div className="card profile-card">
-          <h2>Mi perfil</h2>
+        <div style={{ marginBottom: 40 }}>
+          <h2 className="page-title">
+            MI <span className="page-title-accent">PERFIL</span>
+          </h2>
 
-          <p>
-            <strong>Nombre:</strong> {user.nombre}
+          <p className="page-subtitle">
+            Tu zona privada dentro del universo Eventia.
           </p>
+        </div>
 
-          <p>
-            <strong>Email:</strong> {user.email}
-          </p>
+        {error && <div className="msg-error">⚠ {error}</div>}
 
-          <p>
-            <strong>Rol:</strong> {user.rol}
-          </p>
+        <div className="summary-grid">
+          <SummaryCard
+            title="Reservas"
+            value={reservas.length}
+            description="Experiencias guardadas"
+          />
 
-          <p>
-            <strong>Saldo:</strong> {user.saldoCuenta} €
-          </p>
+          <SummaryCard
+            title="Confirmadas"
+            value={reservasConfirmadas}
+            accentColor="var(--neon-acid)"
+          />
 
-          {user.rol === "CLIENTE" && (
-            <form onSubmit={handleRecargarSaldo} className="login-form">
-              <input
-                type="number"
-                min="1"
-                step="1"
-                placeholder="Cantidad a añadir"
-                value={cantidad}
-                onChange={(e) => setCantidad(e.target.value)}
-                className="filter-input"
-              />
+          <SummaryCard
+            title="Gastado"
+            value={`${gastoTotal.toFixed(2)}€`}
+            accentColor="var(--neon-magenta)"
+          />
+        </div>
 
-              <button
-                type="submit"
-                className="login-button"
-                disabled={cargando}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "minmax(280px, 420px) 1fr",
+            gap: 24,
+          }}
+        >
+          <div className="card card-glow-cyan">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 20,
+                marginBottom: 28,
+              }}
+            >
+              <div className="profile-avatar">{iniciales}</div>
+
+              <div>
+                <div
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "1.8rem",
+                    letterSpacing: "0.04em",
+                    lineHeight: 1,
+                  }}
+                >
+                  {user.nombre}
+                </div>
+
+                <div
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.72rem",
+                    color: "var(--neon-cyan)",
+                    letterSpacing: "0.12em",
+                    marginTop: 6,
+                  }}
+                >
+                  {user.rol}
+                </div>
+              </div>
+            </div>
+
+            <div className="profile-row">
+              <span className="profile-label">Email</span>
+              <span className="profile-value">{user.email}</span>
+            </div>
+
+            <div className="profile-row">
+              <span className="profile-label">Rol</span>
+              <span
+                className="profile-value"
+                style={{ color: "var(--neon-magenta)" }}
               >
-                {cargando ? "Actualizando..." : "Añadir saldo"}
-              </button>
-            </form>
-          )}
+                {user.rol}
+              </span>
+            </div>
+          </div>
 
-          {mensaje && <p className="event-message">{mensaje}</p>}
+          <div className="card card-glow-magenta">
+            <span className="tag tag-acid">PRÓXIMA EXPERIENCIA</span>
+
+            {proximaReserva ? (
+              <>
+                <h3
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "2rem",
+                    letterSpacing: "0.04em",
+                    marginTop: 18,
+                    marginBottom: 8,
+                  }}
+                >
+                  {proximaReserva.evento.nombre}
+                </h3>
+
+                <p style={{ color: "var(--text-muted)" }}>
+                  {proximaReserva.evento.recinto?.nombre},{" "}
+                  {proximaReserva.evento.recinto?.ciudad}
+                </p>
+
+                <p
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    color: "var(--neon-cyan)",
+                    marginTop: 16,
+                  }}
+                >
+                  {new Date(proximaReserva.evento.fechaInicio).toLocaleDateString(
+                    "es-ES",
+                    {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric",
+                    }
+                  )}
+                </p>
+              </>
+            ) : (
+              <p style={{ color: "var(--text-muted)", marginTop: 18 }}>
+                Todavía no tienes una próxima experiencia reservada.
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </section>
