@@ -1,16 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
-import { getEventos } from "../api/eventService";
-import type { Event } from "../types/event";
+import { getEventos } from "../services-api/eventoService";
+import type { Evento } from "../types/evento";
 import EventCard from "../components/events/EventCard";
-import EventFilters from "../components/events/EventFilters";
+import Loading from "../components/ui/Loading";
 
 function EventsPage() {
-  const [eventos, setEventos] = useState<Event[]>([]);
+  const [eventos, setEventos] = useState<Evento[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
-
   const [busqueda, setBusqueda] = useState("");
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
+  const [tipoSeleccionado, setTipoSeleccionado] = useState("");
 
   useEffect(() => {
     const cargarEventos = async () => {
@@ -28,49 +27,93 @@ function EventsPage() {
     cargarEventos();
   }, []);
 
-  const categorias = useMemo(() => {
-    const categoriasUnicas = eventos.map((evento) => evento.categoria);
-    return [...new Set(categoriasUnicas)];
-  }, [eventos]);
-
   const eventosFiltrados = useMemo(() => {
     return eventos.filter((evento) => {
-      const coincideNombre = evento.nombre
-        .toLowerCase()
-        .includes(busqueda.toLowerCase());
+      const texto = busqueda.toLowerCase();
 
-      const coincideCategoria =
-        categoriaSeleccionada === "" ||
-        evento.categoria === categoriaSeleccionada;
+      const coincideNombre =
+        evento.nombre.toLowerCase().includes(texto) ||
+        evento.recinto?.ciudad?.toLowerCase().includes(texto) ||
+        evento.artistas?.some((artista) =>
+          artista.nombreArtistico.toLowerCase().includes(texto)
+        );
 
-      return coincideNombre && coincideCategoria;
+      const coincideTipo =
+        tipoSeleccionado === "" || evento.tipoEvento === tipoSeleccionado;
+
+      return coincideNombre && coincideTipo;
     });
-  }, [eventos, busqueda, categoriaSeleccionada]);
+  }, [eventos, busqueda, tipoSeleccionado]);
 
   return (
     <section className="page">
       <div className="container">
-        <h2 className="page-title">Eventos</h2>
+        <div style={{ marginBottom: 40 }}>
+          <h2 className="page-title">
+            <span className="page-title-accent">EVENTOS</span>
+          </h2>
 
-        <EventFilters
-          busqueda={busqueda}
-          categoriaSeleccionada={categoriaSeleccionada}
-          categorias={categorias}
-          onBusquedaChange={setBusqueda}
-          onCategoriaChange={setCategoriaSeleccionada}
-        />
+          <p className="page-subtitle">
+            {eventos.length > 0
+              ? `${eventosFiltrados.length} eventos encontrados`
+              : "Cargando cartel..."}
+          </p>
+        </div>
 
-        {cargando && <p>Cargando eventos...</p>}
-        {error && <p className="error-message">{error}</p>}
+        <div className="filters-bar">
+          <input
+            className="form-input"
+            type="text"
+            placeholder="Buscar por nombre, ciudad o artista..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+          />
+
+          <select
+            className="form-select"
+            value={tipoSeleccionado}
+            onChange={(e) => setTipoSeleccionado(e.target.value)}
+          >
+            <option value="">Todos los tipos</option>
+            <option value="FESTIVAL">Festival</option>
+            <option value="CONCIERTO">Concierto</option>
+            <option value="SESION">Sesión</option>
+            <option value="FIESTA">Fiesta</option>
+            <option value="STREAM">Stream</option>
+          </select>
+        </div>
+
+        {cargando && <Loading text="Cargando eventos" />}
+
+        {error && (
+          <div className="msg-error">
+            <span>⚠</span> {error}
+          </div>
+        )}
 
         {!cargando && !error && (
           <>
             {eventosFiltrados.length === 0 ? (
-              <p>No hay eventos que coincidan con los filtros.</p>
+              <p
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "0.82rem",
+                  color: "var(--text-dim)",
+                  letterSpacing: "0.1em",
+                  padding: "48px 0",
+                  textAlign: "center",
+                }}
+              >
+                // NO HAY EVENTOS CON ESE FILTRO
+              </p>
             ) : (
               <div className="events-grid">
-                {eventosFiltrados.map((evento) => (
-                  <EventCard key={evento.id} evento={evento} />
+                {eventosFiltrados.map((evento, index) => (
+                  <EventCard
+                    key={evento.id}
+                    evento={evento}
+                    style={{ animationDelay: `${index * 0.04}s` }}
+                  />
                 ))}
               </div>
             )}
