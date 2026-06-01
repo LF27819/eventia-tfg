@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { getEventos } from "../services-api/eventService";
-import type { Event } from "../types/evento";
+import { getEventos } from "../api/eventService";
+import type { Event } from "../types/event";
 import EventCard from "../components/events/EventCard";
 import EventFilters from "../components/events/EventFilters";
 

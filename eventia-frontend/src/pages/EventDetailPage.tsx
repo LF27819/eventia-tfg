@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import { getEventoById } from "../services-api/eventService";
-import type { Event } from "../types/evento";
+import { getEventoById } from "../api/eventService";
+import type { Event } from "../types/event";
 
 const coordenadasRecintos: Record<string, [number, number]> = {
   "WiZink Center": [40.4239, -3.6716],
