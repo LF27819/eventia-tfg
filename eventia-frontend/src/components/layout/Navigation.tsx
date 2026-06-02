@@ -39,6 +39,11 @@ function Navigation() {
               Eventos
             </NavLink>
           </li>
+          <li>
+            <NavLink to="/artistas" className="nav-link">
+              Artistas
+            </NavLink>
+          </li>
           {user && (
             <li>
               <NavLink to="/perfil" className={({ isActive }) => `nav-link${isActive ? " active" : ""}`}>
