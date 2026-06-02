@@ -5,7 +5,6 @@ export interface Artista {
   generoMusical?: string;
   descripcion?: string;
   fechaNacimiento?: string;
-  paisOrigen?: string;
   instagram?: string;
   spotify?: string;
   imagenUrl?: string;
