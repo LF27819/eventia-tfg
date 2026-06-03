@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { getEventos, deleteEvento } from "../services-api/eventoService";
+import { getEventos, deleteEvento, publicarEvento } from "../services-api/eventoService";
 import type { Evento } from "../types/evento";
 import SummaryCard from "../components/dashboard/SummaryCard";
 import Loading from "../components/ui/Loading";
@@ -87,6 +87,21 @@ function OrganizerPage() {
     (total, evento) => total + evento.entradasDisponibles,
     0
   );
+
+  const handlePublicar = async (id: number) => {
+    try {
+      const actualizado = await publicarEvento(id);
+
+      setEventos((actuales) =>
+        actuales.map((evento) =>
+          evento.id === id ? actualizado : evento
+        )
+      );
+    } catch (error) {
+      console.error("Error al publicar evento:", error);
+      setError("No se pudo publicar el evento.");
+    }
+  };
 
   const handleEliminar = async (id: number) => {
     const confirmar = window.confirm(
@@ -241,6 +256,17 @@ function OrganizerPage() {
                       >
                         Ver
                       </Link>
+
+                      {/* Si esta en borrador sale boton publicar, sino no */}
+                      {evento.estado === "BORRADOR" && (
+                        <button
+                          type="button"
+                          className="btn btn-acid btn-sm"
+                          onClick={() => handlePublicar(evento.id)}
+                        >
+                          Publicar
+                        </button>
+                      )}
 
                       <Link
                         to={`/organizador/eventos/${evento.id}/editar`}
