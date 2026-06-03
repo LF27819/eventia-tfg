@@ -144,11 +144,16 @@ function OrganizerPage() {
             </p>
           </div>
 
-          <Link to="/organizador/eventos/nuevo" className="btn btn-acid">
-            Crear evento
-          </Link>
-        </div>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <Link to="/organizador/recintos" className="btn btn-secondary">
+              Ver recintos
+            </Link>
 
+            <Link to="/organizador/eventos/nuevo" className="btn btn-acid">
+              Crear evento
+            </Link>
+          </div>
+        </div>
         {error && <div className="msg-error">⚠ {error}</div>}
 
         <div className="summary-grid">
