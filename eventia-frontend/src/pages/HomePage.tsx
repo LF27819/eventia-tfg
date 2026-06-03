@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import HomePromoVideo from "../components/home/HomePromoVideo";
 
 const generos = ["Techno", "Hardcore", "Festival", "Concierto", "Reggaetón", "Rap"];
 
@@ -75,6 +76,8 @@ function HomePage() {
           </div>
         </div>
       </div>
+
+      <HomePromoVideo />
 
       <section style={{ borderTop: "1px solid var(--border-subtle)", padding: "64px 0" }}>
         <div className="container" style={{ textAlign: "center" }}>
