@@ -6,6 +6,7 @@ import Loading from "../components/ui/Loading";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { createReserva } from "../services-api/reservaService";
 import { useAuth } from "../context/AuthContext"
+import EventCountdown from "../components/events/EventCountdown";
 
 function tipoEventoTag(tipo: TipoEvento): string {
   switch (tipo) {
@@ -200,8 +201,12 @@ function EventDetailPage() {
               )}
             </div>
 
-            <h2 className="detail-title">{evento.nombre}</h2>
+            <div className="detail-title-countdown-row">
+              <h2 className="detail-title">{evento.nombre}</h2>
 
+              <EventCountdown fechaInicio={evento.fechaInicio} />
+            </div>
+            
             <p className="detail-desc">
               {evento.descripcion || "Una experiencia única dentro de Eventia."}
             </p>

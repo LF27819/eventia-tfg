@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
 import type { Entrada } from "../../types/entrada";
 import { descargarPdfEntrada } from "../../services-api/entradaService";
