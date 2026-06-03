@@ -1846,6 +1846,195 @@ img { max-width: 100%; display: block; }
   color: var(--text-muted);
 }
 
+
+/* ── Detalle artista ──────────────────────────────────────── */
+.artist-name-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.artist-name-link:hover {
+  color: var(--neon-acid);
+}
+
+.back-link {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.artist-detail-hero {
+  display: grid;
+  grid-template-columns: minmax(280px, 420px) 1fr;
+  gap: 32px;
+  align-items: stretch;
+  margin-bottom: 48px;
+}
+
+.artist-detail-image-wrapper {
+  min-height: 560px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+  background: var(--bg-elevated);
+}
+
+.artist-detail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.artist-detail-placeholder {
+  height: 100%;
+  min-height: 560px;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  color: var(--neon-cyan);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(0,245,255,0.12), transparent 35%),
+    radial-gradient(circle at 70% 70%, rgba(255,0,170,0.12), transparent 35%),
+    var(--bg-elevated);
+}
+
+.artist-detail-content {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background:
+    radial-gradient(circle at 10% 10%, rgba(0,245,255,0.08), transparent 30%),
+    radial-gradient(circle at 90% 80%, rgba(255,0,170,0.08), transparent 35%),
+    var(--bg-card);
+  padding: 36px;
+  box-shadow: var(--shadow-card);
+}
+
+.artist-detail-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.artist-detail-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 7vw, 6rem);
+  line-height: 0.9;
+  letter-spacing: 0.04em;
+  margin-bottom: 14px;
+}
+
+.artist-detail-real-name {
+  font-family: var(--font-mono);
+  color: var(--neon-cyan);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+
+.artist-detail-description {
+  color: var(--text-muted);
+  line-height: 1.8;
+  max-width: 780px;
+  margin-bottom: 28px;
+}
+
+.artist-detail-links {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.artist-internal-panel {
+  margin-top: 28px;
+  border: 1px solid rgba(255, 140, 0, 0.22);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(255,140,0,0.08), transparent 35%),
+    rgba(0,0,0,0.18);
+}
+
+.artist-internal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.artist-internal-grid div {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+
+.artist-internal-grid span {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--text-dim);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.artist-internal-grid strong {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--neon-orange);
+}
+
+.artist-events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.artist-event-card {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  padding: 20px;
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.artist-event-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--neon-cyan);
+}
+
+.artist-event-card h4 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  margin: 14px 0 8px;
+}
+
+.artist-event-card p {
+  color: var(--text-muted);
+}
+
+@media (max-width: 900px) {
+  .artist-detail-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .artist-detail-image-wrapper,
+  .artist-detail-placeholder {
+    min-height: 420px;
+  }
+
+  .artist-internal-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 768px) {
   .hero-stats { flex-direction: column; gap: 24px; }
