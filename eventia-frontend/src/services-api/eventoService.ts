@@ -27,3 +27,12 @@ export const updateEvento = async (
 export const deleteEvento = async (id: number): Promise<void> => {
   await api.delete(`/eventos/${id}`);
 };
+
+//Función actualizar evento de Borrador a Publicado - organizador.
+export const publicarEvento = async (id: number): Promise<Evento> => {
+  const response = await api.patch(`/eventos/${id}`, {
+    estado: "PUBLICADO",
+  });
+
+  return response.data;
+};
