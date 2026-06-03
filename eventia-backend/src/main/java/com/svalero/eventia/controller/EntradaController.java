@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.svalero.eventia.service.PdfEntradaService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import java.util.List;
 
@@ -21,6 +24,9 @@ public class EntradaController {
 
     @Autowired
     private EntradaService entradaService;
+
+    @Autowired
+    private PdfEntradaService pdfEntradaService;
 
     private final Logger logger = LoggerFactory.getLogger(EntradaController.class);
 
@@ -82,6 +88,24 @@ public class EntradaController {
                                                        @PathVariable EstadoEntrada estado) {
         logger.info("GET /entradas/evento/{}/estado/{}/total", eventoId, estado);
         return ResponseEntity.ok(entradaService.countByEventoAndEstado(eventoId, estado));
+    }
+
+    //GET para PDF
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> descargarPdfEntrada(@PathVariable long id)
+            throws EntradaNotFoundException {
+
+        Entrada entrada = entradaService.findById(id);
+
+        byte[] pdf = pdfEntradaService.generarPdfEntrada(entrada);
+
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=entrada-eventia-" + entrada.getId() + ".pdf"
+                )
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 
     @PatchMapping("/validar/{codigoQr}")

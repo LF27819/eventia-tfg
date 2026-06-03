@@ -52,3 +52,21 @@ export const getEntradasByEstado = async (
   const response = await api.get(`/entradas?estado=${estado}`);
   return response.data;
 };
+
+//Funcion descargar PDF
+export const descargarPdfEntrada = async (id: number): Promise<void> => {
+  const response = await api.get(`/entradas/${id}/pdf`, {
+    responseType: "blob",
+  });
+
+  const url = window.URL.createObjectURL(new Blob([response.data]));
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.setAttribute("download", `entrada-eventia-${id}.pdf`);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  window.URL.revokeObjectURL(url);
+};
