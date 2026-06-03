@@ -2214,6 +2214,58 @@ img { max-width: 100%; display: block; }
   }
 }
 
+.availability-panel {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+  margin: 24px 0;
+  padding: 22px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background:
+    radial-gradient(circle at 15% 20%, rgba(204,255,0,0.08), transparent 32%),
+    radial-gradient(circle at 90% 80%, rgba(255,0,170,0.08), transparent 32%),
+    rgba(0,0,0,0.18);
+}
+
+.availability-panel p {
+  margin-top: 12px;
+  color: var(--text-muted);
+}
+
+.availability-number {
+  text-align: right;
+  min-width: 140px;
+}
+
+.availability-number strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--neon-acid);
+}
+
+.availability-number span {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 600px) {
+  .availability-panel {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .availability-number {
+    text-align: left;
+  }
+}
+
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 768px) {
   .hero-stats { flex-direction: column; gap: 24px; }
