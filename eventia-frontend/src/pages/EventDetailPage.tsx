@@ -276,7 +276,14 @@ function EventDetailPage() {
 
                 <div className="location-panel">
                   <div className="location-info">
-                    <h4>{evento.recinto.nombre}</h4>
+                    <h4>
+                      <Link
+                        to={`/recintos/${evento.recinto.id}`}
+                        className="venue-detail-link"
+                      >
+                        {evento.recinto.nombre}
+                      </Link>
+                    </h4>
                     <p>{evento.recinto.direccion}</p>
                     <p>
                       {evento.recinto.ciudad}, {evento.recinto.provincia}
