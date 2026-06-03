@@ -66,7 +66,7 @@ function VenueCard({ recinto, eventosProgramados }: VenueCardProps) {
           <span>{recinto.direccion}</span>
 
           <Link
-            to={`/organizador/recintos/${recinto.id}`}
+            to={`/recintos/${recinto.id}`}
             className="btn btn-secondary btn-sm"
           >
             Ver detalle

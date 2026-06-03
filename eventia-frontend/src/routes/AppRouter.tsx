@@ -13,6 +13,7 @@ import ArtistsPage from "../pages/ArtistsPage";
 import OrganizerEventFormPage from "../pages/OrganizerEventFormPage";
 import OrganizerVenuesPage from "../pages/OrganizerVenuesPage";
 import ArtistDetailPage from "../pages/ArtistDetailPage";
+import VenueDetailPage from "../pages/VenueDetailPage";
 
 function AppRouter() {
   return (
@@ -32,6 +33,7 @@ function AppRouter() {
       <Route path="/organizador/eventos/:id/editar" element={<OrganizerEventFormPage />} />
       <Route path="/organizador/recintos" element={<OrganizerVenuesPage />} />
       <Route path="/artistas/:id" element={<ArtistDetailPage />} />
+      <Route path="/recintos/:id" element={<VenueDetailPage />} />
     </Routes>
   );
 }
