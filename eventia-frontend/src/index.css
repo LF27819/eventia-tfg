@@ -2266,6 +2266,106 @@ img { max-width: 100%; display: block; }
   }
 }
 
+/* ── Cartel fotos artistas en evento ──────────────────────────────────────── */
+.lineup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+.lineup-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  background: transparent;
+  border: none;
+  box-shadow: none;
+
+  padding: 0;
+  min-height: auto;
+}
+
+.lineup-card:hover {
+  transform: translateY(-4px);
+}
+
+.lineup-image-wrapper {
+  position: static;
+}
+
+.lineup-image {
+  width: 140px;
+  height: 140px;
+
+  border-radius: 50%;
+  object-fit: cover;
+
+  border: 3px solid var(--neon-cyan);
+  box-shadow: 0 0 16px rgba(0, 245, 255, 0.25);
+
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.lineup-card:hover .lineup-image {
+  transform: scale(1.05);
+  box-shadow: 0 0 24px rgba(0, 245, 255, 0.4);
+}
+
+.lineup-placeholder {
+  width: 140px;
+  height: 140px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--neon-cyan);
+
+  border: 3px solid var(--neon-cyan);
+
+  background:
+    radial-gradient(circle at 30% 30%, rgba(0,245,255,0.14), transparent 36%),
+    radial-gradient(circle at 70% 70%, rgba(255,0,170,0.14), transparent 36%),
+    var(--bg-elevated);
+}
+
+.lineup-overlay {
+  display: none;
+}
+
+.lineup-content {
+  position: static;
+  margin-top: 14px;
+}
+
+.lineup-content h4 {
+  margin: 0 0 6px;
+
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  line-height: 1.1;
+}
+
+.lineup-content p {
+  margin: 0;
+
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 768px) {
   .hero-stats { flex-direction: column; gap: 24px; }

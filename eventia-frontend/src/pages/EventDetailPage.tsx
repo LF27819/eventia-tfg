@@ -8,6 +8,7 @@ import { createReserva } from "../services-api/reservaService";
 import { useAuth } from "../context/AuthContext"
 import EventCountdown from "../components/events/EventCountdown";
 import TicketAvailability from "../components/events/TicketAvailability";
+import EventLineup from "../components/events/EventLineup";
 
 function tipoEventoTag(tipo: TipoEvento): string {
   switch (tipo) {
@@ -261,25 +262,7 @@ function EventDetailPage() {
               entradasDisponibles={evento.entradasDisponibles}
             />
 
-            {evento.artistas && evento.artistas.length > 0 && (
-              <>
-                <h3 className="detail-section-title">CARTEL</h3>
-
-                <div className="artists-list">
-                  {evento.artistas.map((artista) => (
-                    <div key={artista.id} className="artist-chip">
-                      <span>{artista.nombreArtistico}</span>
-
-                      {artista.generoMusical && (
-                        <span className="artist-chip-genre">
-                          {artista.generoMusical}
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
+            <EventLineup artistas={evento.artistas} />
 
             {evento.recinto?.latitud && evento.recinto?.longitud && (
               <>
