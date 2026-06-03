@@ -12,6 +12,7 @@ import MyTicketsPage from "../pages/MyTicketsPage";
 import ArtistsPage from "../pages/ArtistsPage";
 import OrganizerEventFormPage from "../pages/OrganizerEventFormPage";
 import OrganizerVenuesPage from "../pages/OrganizerVenuesPage";
+import ArtistDetailPage from "../pages/ArtistDetailPage";
 
 function AppRouter() {
   return (
@@ -30,6 +31,7 @@ function AppRouter() {
       <Route path="/organizador/eventos/nuevo" element={<OrganizerEventFormPage />} />
       <Route path="/organizador/eventos/:id/editar" element={<OrganizerEventFormPage />} />
       <Route path="/organizador/recintos" element={<OrganizerVenuesPage />} />
+      <Route path="/artistas/:id" element={<ArtistDetailPage />} />
     </Routes>
   );
 }

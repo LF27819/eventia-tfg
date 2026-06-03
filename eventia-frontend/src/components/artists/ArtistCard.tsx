@@ -1,5 +1,6 @@
 import type { Artista } from "../../types/artista";
 import { FaInstagram, FaSpotify } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 interface ArtistCardProps {
   artista: Artista;
@@ -26,7 +27,14 @@ function ArtistCard({ artista }: ArtistCardProps) {
           {artista.generoMusical || "ARTISTA"}
         </span>
 
-        <h3>{artista.nombreArtistico}</h3>
+        <h3>
+          <Link
+            to={`/artistas/${artista.id}`}
+            className="artist-name-link"
+          >
+            {artista.nombreArtistico}
+          </Link>
+        </h3>
 
         {artista.descripcion && (
           <p className="artist-description">
