@@ -1,4 +1,5 @@
 import type { Evento } from "./evento";
+import type { Reserva } from "./reserva";
 
 export type EstadoEntrada =
   | "VALIDA"
@@ -25,4 +26,5 @@ export interface Entrada {
   fechaUso?: string | null;
 
   evento: Evento;
+  reserva?: Reserva;
 }

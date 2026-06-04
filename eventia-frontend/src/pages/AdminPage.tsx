@@ -21,7 +21,7 @@ function AdminPage() {
             <h3>Gestionar usuarios</h3>
 
             <p>
-              Crea usuarios, modifica roles, activa o desactiva cuentas y
+              Gestiona usuarios, modifica roles, activa o desactiva cuentas y
               controla el acceso a Eventia.
             </p>
 

@@ -2784,6 +2784,738 @@ img { max-width: 100%; display: block; }
 }
 
 
+/* ── Gestion Reservas admin ──────────────────────────────────────── */
+.admin-reservas-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 6, 8, 0.88);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+}
+
+.admin-reservas-modal {
+  background: var(--bg-card);
+  border: 1px solid rgba(204, 255, 0, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  width: 100%;
+  max-width: 540px;
+  box-shadow: 0 0 40px rgba(204, 255, 0, 0.08);
+  animation: pageFadeIn 0.2s ease;
+}
+
+.admin-reservas-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.admin-reservas-modal-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  letter-spacing: 0.06em;
+  color: var(--neon-acid);
+  margin-bottom: 4px;
+}
+
+.admin-reservas-code {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+}
+
+.admin-reservas-modal-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-reservas-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+/* Detalle modal */
+.admin-reservas-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-reservas-detail-card {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  border: 1px solid var(--border-subtle);
+}
+
+.admin-reservas-detail-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.admin-reservas-detail-main {
+  font-weight: 500;
+  font-size: 0.92rem;
+  margin-bottom: 2px;
+}
+
+.admin-reservas-detail-muted {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.admin-reservas-detail-number {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.admin-reservas-detail-number-cyan {
+  color: var(--neon-cyan);
+}
+
+.admin-reservas-detail-number-acid {
+  color: var(--neon-acid);
+}
+
+.admin-reservas-date {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+/* Errores */
+.admin-reservas-error {
+  background: rgba(255, 0, 170, 0.08);
+  border: 1px solid rgba(255, 0, 170, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  color: var(--neon-magenta);
+  font-size: 0.88rem;
+  margin-bottom: 16px;
+}
+
+.admin-reservas-page-error {
+  background: rgba(255, 0, 170, 0.08);
+  border: 1px solid rgba(255, 0, 170, 0.3);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  color: var(--neon-magenta);
+  margin-bottom: 32px;
+}
+
+/* Acciones */
+.admin-reservas-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-reservas-confirm-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.admin-reservas-action-btn {
+  flex: 1;
+}
+
+.admin-reservas-delete-outline {
+  border: 1px solid var(--neon-magenta);
+  color: var(--neon-magenta);
+  background: transparent;
+}
+
+.admin-reservas-delete-warning {
+  background: rgba(255, 0, 170, 0.08);
+  border: 1px solid rgba(255, 0, 170, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+
+.admin-reservas-delete-warning-title {
+  color: var(--neon-magenta);
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.admin-reservas-delete-warning-text {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Página */
+.admin-reservas-page-header {
+  margin-bottom: 40px;
+}
+
+/* Summary */
+.admin-reservas-summary-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+}
+
+.admin-reservas-summary-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.admin-reservas-summary-value {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.admin-reservas-summary-value-cyan {
+  color: var(--neon-cyan);
+  filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.4));
+}
+
+.admin-reservas-summary-value-acid {
+  color: var(--neon-acid);
+  filter: drop-shadow(0 0 8px rgba(204, 255, 0, 0.4));
+}
+
+.admin-reservas-summary-value-orange {
+  color: var(--neon-orange);
+  filter: drop-shadow(0 0 8px rgba(255, 149, 0, 0.4));
+}
+
+.admin-reservas-summary-value-magenta {
+  color: var(--neon-magenta);
+  filter: drop-shadow(0 0 8px rgba(255, 0, 170, 0.4));
+}
+
+/* Filtros */
+.admin-reservas-filters {
+  margin-bottom: 24px;
+}
+
+.admin-reservas-filter-select {
+  max-width: 220px;
+}
+
+/* Tabla */
+.admin-reservas-empty-cell {
+  text-align: center;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 40px 16px;
+}
+
+.admin-reservas-table-code {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--neon-cyan);
+  letter-spacing: 0.08em;
+}
+
+.admin-reservas-table-main {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.admin-reservas-table-muted {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.admin-reservas-table-entries {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--neon-cyan);
+}
+
+.admin-reservas-table-total {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--neon-acid);
+}
+
+.admin-reservas-table-date {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.admin-reservas-results-count {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 16px;
+  text-align: right;
+}
+
+.admin-reservas-entradas-box {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.admin-reservas-entradas-header {
+  margin-bottom: 12px;
+}
+
+.admin-reservas-entradas-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.admin-reservas-entradas-muted,
+.admin-reservas-entradas-error {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.admin-reservas-entradas-error {
+  color: var(--neon-magenta);
+}
+
+.admin-reservas-entradas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-reservas-entrada-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+
+.admin-reservas-entrada-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.admin-reservas-entrada-code {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--neon-cyan);
+  word-break: break-all;
+  margin-bottom: 4px;
+}
+
+.admin-reservas-entrada-price {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--neon-acid);
+}
+
+.admin-reservas-entrada-tags {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.admin-reservas-modal {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.admin-reservas-entradas-box {
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .admin-reservas-modal {
+    padding: 24px;
+  }
+
+  .admin-reservas-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-reservas-modal-header {
+    gap: 16px;
+  }
+
+  .admin-reservas-confirm-actions,
+  .admin-reservas-actions {
+    flex-direction: column;
+  }
+
+  .admin-reservas-filter-select {
+    max-width: 100%;
+  }
+}
+
+
+/* ── Gestion Tickets admin ──────────────────────────────────────── */
+.admin-entradas-page-header {
+  margin-bottom: 40px;
+}
+
+.admin-entradas-error {
+  background: rgba(255, 0, 170, 0.08);
+  border: 1px solid rgba(255, 0, 170, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  color: var(--neon-magenta);
+  font-size: 0.88rem;
+  margin-bottom: 16px;
+}
+
+.admin-entradas-data-block {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+
+.admin-entradas-data-label,
+.admin-entradas-stat-label,
+.admin-entradas-edit-title,
+.admin-entradas-form-label {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+.admin-entradas-data-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+
+.admin-entradas-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 6, 8, 0.88);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+}
+
+.admin-entradas-modal {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 0, 170, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0 40px rgba(255, 0, 170, 0.08);
+  animation: pageFadeIn 0.2s ease;
+}
+
+.admin-entradas-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.admin-entradas-modal-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  letter-spacing: 0.06em;
+  color: var(--neon-magenta);
+  margin-bottom: 8px;
+}
+
+.admin-entradas-tags-row {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-entradas-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.admin-entradas-close-btn:hover {
+  color: var(--neon-magenta);
+}
+
+.admin-entradas-main-text {
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+
+.admin-entradas-muted-mono,
+.admin-entradas-used-date {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.admin-entradas-block-spacing {
+  margin-top: 12px;
+}
+
+.admin-entradas-cyan-code,
+.admin-entradas-qr-code {
+  font-family: var(--font-mono);
+  color: var(--neon-cyan);
+  letter-spacing: 0.06em;
+}
+
+.admin-entradas-cyan-code {
+  font-size: 0.78rem;
+}
+
+.admin-entradas-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.admin-entradas-price-big {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--neon-acid);
+}
+
+.admin-entradas-date-text {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-primary);
+}
+
+.admin-entradas-used-date {
+  margin-top: 4px;
+}
+
+.admin-entradas-qr-code {
+  font-size: 0.78rem;
+  word-break: break-all;
+}
+
+.admin-entradas-edit-box {
+  background: var(--bg-elevated);
+  border: 1px solid rgba(204, 255, 0, 0.2);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.admin-entradas-edit-title {
+  font-size: 0.7rem;
+  color: var(--neon-acid);
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+
+.admin-entradas-edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.admin-entradas-form-label {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  letter-spacing: 0.1em;
+}
+
+.admin-entradas-edit-actions,
+.admin-entradas-modal-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.admin-entradas-error-spacing {
+  margin-top: 16px;
+}
+
+.admin-entradas-modal-actions {
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.admin-entradas-flex-btn,
+.admin-entradas-pdf-btn {
+  flex: 1;
+}
+
+.admin-entradas-pdf-btn {
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  background: transparent;
+}
+
+.admin-entradas-pdf-btn:hover:not(:disabled) {
+  background: rgba(0, 229, 255, 0.08);
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.18);
+}
+
+.admin-entradas-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+}
+
+.admin-entradas-stat-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.admin-entradas-stat-value {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.admin-entradas-stat-cyan {
+  color: var(--neon-cyan);
+  filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.4));
+}
+
+.admin-entradas-stat-acid {
+  color: var(--neon-acid);
+  filter: drop-shadow(0 0 8px rgba(204, 255, 0, 0.4));
+}
+
+.admin-entradas-stat-magenta {
+  color: var(--neon-magenta);
+  filter: drop-shadow(0 0 8px rgba(255, 0, 170, 0.4));
+}
+
+.admin-entradas-stat-purple {
+  color: var(--neon-purple);
+  filter: drop-shadow(0 0 8px rgba(174, 92, 255, 0.4));
+}
+
+.admin-entradas-filters {
+  margin-bottom: 24px;
+}
+
+.admin-entradas-filter-select {
+  max-width: 200px;
+}
+
+.admin-entradas-empty-cell {
+  text-align: center;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 40px 16px;
+}
+
+.admin-entradas-id-text,
+.admin-entradas-table-muted-text,
+.admin-entradas-table-code,
+.admin-entradas-table-price,
+.admin-entradas-table-date,
+.admin-entradas-results-count {
+  font-family: var(--font-mono);
+}
+
+.admin-entradas-id-text {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.admin-entradas-table-main-text {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.admin-entradas-table-muted-text {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.admin-entradas-table-code {
+  font-size: 0.75rem;
+  color: var(--neon-cyan);
+  letter-spacing: 0.08em;
+}
+
+.admin-entradas-table-price {
+  font-size: 0.85rem;
+  color: var(--neon-acid);
+}
+
+.admin-entradas-table-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.admin-entradas-results-count {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 16px;
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .admin-entradas-modal {
+    padding: 24px;
+  }
+
+  .admin-entradas-modal-grid,
+  .admin-entradas-edit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-entradas-filter-select {
+    max-width: none;
+  }
+}
+
 
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 768px) {

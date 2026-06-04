@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getUsuarios,
   updateUsuario,
@@ -173,6 +174,12 @@ function ModalReservasUsuario({
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
 
+  const navigate = useNavigate();
+
+  const irAGestionReservas = () => {
+    navigate(`/admin/reservas?usuario=${usuario.id}`);
+  };
+
   useEffect(() => {
     fetchReservasByUsuario(usuario.id)
       .then(setReservas)
@@ -223,6 +230,15 @@ function ModalReservasUsuario({
           ))}
         </div>
       )}
+
+      <div className="admin-user-modal-actions admin-user-modal-actions-spaced">
+        <button
+          className="btn btn-acid admin-user-flex-button"
+          onClick={irAGestionReservas}
+        >
+          Ver en gestión de reservas
+        </button>
+      </div>
     </Modal>
   );
 }
@@ -259,7 +275,7 @@ function ModalEliminarUsuario({
         <strong className="admin-user-delete-name">
           {usuario.nombre} {usuario.apellidos}
         </strong>
-        ? Esta acción es irreversible y eliminará todas sus reservas y entradas.
+        ? Esta acción es irreversible.
       </p>
 
       {error && (
@@ -375,7 +391,7 @@ function AdminUsuariosPage() {
           {[
             { label: "Total usuarios", value: usuarios.length, className: "summary-value-cyan" },
             { label: "Activos", value: totalActivos, className: "summary-value-acid" },
-            { label: "Admins", value: totalAdmins, className: "summary-value-magenta" },
+            { label: "Administradores", value: totalAdmins, className: "summary-value-magenta" },
             { label: "Organizadores", value: totalOrganizadores, className: "summary-value-purple" },
           ].map(({ label, value, className }) => (
             <div key={label} className="admin-user-summary-card">
@@ -481,7 +497,6 @@ function AdminUsuariosPage() {
                       <button
                         onClick={() => handleToggleEstado(u)}
                         className={`tag ${estadoColor(u.activo)} admin-user-status-button`}
-                        title={u.activo ? "Clic para desactivar" : "Clic para activar"}
                       >
                         {u.activo ? "● ACTIVO" : "○ INACTIVO"}
                       </button>
