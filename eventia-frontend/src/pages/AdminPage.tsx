@@ -1,42 +1,6 @@
-import { useEffect, useState } from "react";
-import { getEventos } from "../services-api/eventoService";
-import type { Evento } from "../types/evento";
-import Loading from "../components/ui/Loading";
-import SummaryCard from "../components/dashboard/SummaryCard";
+import { Link } from "react-router-dom";
 
 function AdminPage() {
-  const [eventos, setEventos] = useState<Evento[]>([]);
-  const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    const cargarEventos = async () => {
-      try {
-        const data = await getEventos();
-        setEventos(data);
-      } catch (error) {
-        console.error(error);
-        setError("No se pudieron cargar los datos.");
-      } finally {
-        setCargando(false);
-      }
-    };
-
-    cargarEventos();
-  }, []);
-
-  const publicados = eventos.filter(
-    (evento) => evento.estado === "PUBLICADO"
-  ).length;
-
-  const cancelados = eventos.filter(
-    (evento) => evento.estado === "CANCELADO"
-  ).length;
-
-  if (cargando) {
-    return <Loading text="Cargando panel admin" />;
-  }
-
   return (
     <section className="page">
       <div className="container">
@@ -46,52 +10,49 @@ function AdminPage() {
           </h2>
 
           <p className="page-subtitle">
-            Supervisión global de la plataforma Eventia.
+            Centro de control para supervisar usuarios, reservas y entradas.
           </p>
         </div>
 
-        {error && <div className="msg-error">⚠ {error}</div>}
+        <div className="admin-hub-grid">
+          <Link to="/admin/usuarios" className="admin-hub-card">
+            <span className="tag tag-cyan">USUARIOS</span>
 
-        <div className="summary-grid">
-          <SummaryCard
-            title="Eventos"
-            value={eventos.length}
-          />
+            <h3>Gestionar usuarios</h3>
 
-          <SummaryCard
-            title="Publicados"
-            value={publicados}
-            accentColor="var(--neon-acid)"
-          />
+            <p>
+              Crea usuarios, modifica roles, activa o desactiva cuentas y
+              controla el acceso a Eventia.
+            </p>
 
-          <SummaryCard
-            title="Cancelados"
-            value={cancelados}
-            accentColor="var(--neon-magenta)"
-          />
-        </div>
+            <strong>Entrar →</strong>
+          </Link>
 
-        <div className="card card-glow-cyan">
-          <h3
-            style={{
-              marginBottom: 24,
-              fontFamily: "var(--font-display)",
-            }}
-          >
-            Estado del sistema
-          </h3>
+          <Link to="/admin/reservas" className="admin-hub-card">
+            <span className="tag tag-acid">RESERVAS</span>
 
-          <p>
-            Eventos registrados: {eventos.length}
-          </p>
+            <h3>Gestionar reservas</h3>
 
-          <p>
-            Eventos publicados: {publicados}
-          </p>
+            <p>
+              Revisa todas las reservas, confirma operaciones pendientes,
+              cancela reservas y supervisa ingresos.
+            </p>
 
-          <p>
-            Eventos cancelados: {cancelados}
-          </p>
+            <strong>Entrar →</strong>
+          </Link>
+
+          <Link to="/admin/entradas" className="admin-hub-card">
+            <span className="tag tag-magenta">ENTRADAS</span>
+
+            <h3>Gestionar entradas</h3>
+
+            <p>
+              Consulta entradas emitidas, valida accesos, cancela pases y
+              descarga PDFs de entrada.
+            </p>
+
+            <strong>Entrar →</strong>
+          </Link>
         </div>
       </div>
     </section>

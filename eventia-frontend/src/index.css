@@ -2433,6 +2433,57 @@ img { max-width: 100%; display: block; }
     padding: 32px 22px;
   }
 }
+
+/* ── Admin page ──────────────────────────────────────── */
+
+.admin-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.admin-hub-card {
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  padding: 28px;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(0,245,255,0.08), transparent 34%),
+    radial-gradient(circle at 90% 80%, rgba(255,0,170,0.08), transparent 34%),
+    var(--bg-card);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.admin-hub-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--neon-cyan);
+}
+
+.admin-hub-card h3 {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  line-height: 0.95;
+  letter-spacing: 0.04em;
+}
+
+.admin-hub-card p {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.admin-hub-card strong {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  color: var(--neon-cyan);
+}
+
+
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 768px) {
   .hero-stats { flex-direction: column; gap: 24px; }
