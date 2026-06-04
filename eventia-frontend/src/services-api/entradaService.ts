@@ -53,6 +53,10 @@ export const getEntradasByEstado = async (
   return response.data;
 };
 
+export async function deleteEntrada(id: number): Promise<void> {
+  await api.delete(`/entradas/${id}`);
+}
+
 //Funcion descargar PDF
 export const descargarPdfEntrada = async (id: number): Promise<void> => {
   const response = await api.get(`/entradas/${id}/pdf`, {

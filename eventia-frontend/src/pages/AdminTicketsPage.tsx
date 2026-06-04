@@ -30,7 +30,26 @@ const tipoTag: Record<TipoEntrada, string> = {
   BACKSTAGE: "tag-magenta",
 };
 
-// ── Modal detalle/gestión de entrada ──────────────────
+function MsgError({ msg }: { msg: string }) {
+  return <div className="admin-entradas-error">⚠ {msg}</div>;
+}
+
+function DataBlock({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="admin-entradas-data-block">
+      <p className="admin-entradas-data-label">{label}</p>
+      {children}
+    </div>
+  );
+}
+
+// ── Modal gestión de entrada ───────────────────────────
 function ModalEntrada({
   entrada,
   onClose,
@@ -41,10 +60,8 @@ function ModalEntrada({
   onActualizada: (e: Entrada) => void;
 }) {
   const [cargando, setCargando] = useState(false);
-  const [error, setError] = useState("");
   const [descargando, setDescargando] = useState(false);
-
-  // Editar tipo/precio
+  const [error, setError] = useState("");
   const [editandoTipo, setEditandoTipo] = useState(false);
   const [nuevoTipo, setNuevoTipo] = useState<TipoEntrada>(entrada.tipoEntrada);
   const [nuevoPrecio, setNuevoPrecio] = useState(entrada.precio.toString());
@@ -52,6 +69,7 @@ function ModalEntrada({
   const ejecutar = async (fn: () => Promise<Entrada>) => {
     setCargando(true);
     setError("");
+
     try {
       const actualizada = await fn();
       onActualizada(actualizada);
@@ -62,25 +80,47 @@ function ModalEntrada({
     }
   };
 
-  const handleValidar = () =>
-    ejecutar(() => validarEntrada(entrada.codigoQr));
+  const handleValidar = () => ejecutar(() => validarEntrada(entrada.codigoQr));
 
-  const handleCancelar = () =>
-    ejecutar(() => cancelarEntrada(entrada.id));
+  const handleCancelar = () => ejecutar(() => cancelarEntrada(entrada.id));
 
-  const handleGuardarTipo = () => {
+  const handleGuardarTipo = async () => {
     const precio = parseFloat(nuevoPrecio);
+
     if (isNaN(precio) || precio < 0) {
       setError("Precio inválido.");
       return;
     }
-    ejecutar(() => actualizarTipoEntrada(entrada.id, nuevoTipo, precio)).then(
-      () => setEditandoTipo(false)
-    );
+
+    setCargando(true);
+    setError("");
+
+    try {
+      const actualizada = await actualizarTipoEntrada(
+        entrada.id,
+        nuevoTipo,
+        precio
+      );
+      onActualizada(actualizada);
+      setEditandoTipo(false);
+    } catch {
+      setError("No se pudo actualizar el tipo/precio.");
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  const handleCancelarEdicion = () => {
+    setEditandoTipo(false);
+    setNuevoTipo(entrada.tipoEntrada);
+    setNuevoPrecio(entrada.precio.toString());
+    setError("");
   };
 
   const handleDescargarPdf = async () => {
     setDescargando(true);
+    setError("");
+
     try {
       await descargarPdfEntrada(entrada.id);
     } catch {
@@ -91,57 +131,16 @@ function ModalEntrada({
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(6,6,8,0.88)",
-        backdropFilter: "blur(8px)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000,
-        padding: 24,
-      }}
-      onClick={onClose}
-    >
+    <div className="admin-entradas-modal-overlay" onClick={onClose}>
       <div
-        style={{
-          background: "var(--bg-card)",
-          border: "1px solid rgba(255,0,170,0.2)",
-          borderRadius: "var(--radius-lg)",
-          padding: 32,
-          width: "100%",
-          maxWidth: 520,
-          maxHeight: "90vh",
-          overflowY: "auto",
-          boxShadow: "0 0 40px rgba(255,0,170,0.08)",
-          animation: "pageFadeIn 0.2s ease",
-        }}
+        className="admin-entradas-modal"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Cabecera */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            marginBottom: 24,
-          }}
-        >
+        <div className="admin-entradas-modal-header">
           <div>
-            <h3
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "1.5rem",
-                letterSpacing: "0.06em",
-                color: "var(--neon-magenta)",
-                marginBottom: 4,
-              }}
-            >
-              ENTRADA #{entrada.id}
-            </h3>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <h3 className="admin-entradas-modal-title">ENTRADA #{entrada.id}</h3>
+
+            <div className="admin-entradas-tags-row">
               <span className={`tag ${estadoTag[entrada.estado]}`}>
                 {entrada.estado}
               </span>
@@ -150,217 +149,79 @@ function ModalEntrada({
               </span>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "var(--text-muted)",
-              fontSize: "1.4rem",
-              cursor: "pointer",
-            }}
-          >
+
+          <button className="admin-entradas-close-btn" onClick={onClose}>
             ✕
           </button>
         </div>
 
-        {/* Datos del evento */}
-        <div
-          style={{
-            background: "var(--bg-elevated)",
-            border: "1px solid var(--border-subtle)",
-            borderRadius: "var(--radius-md)",
-            padding: "16px",
-            marginBottom: 16,
-          }}
-        >
-          <p
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.65rem",
-              color: "var(--text-muted)",
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              marginBottom: 6,
-            }}
-          >
-            Evento
+        <DataBlock label="Usuario">
+          <p className="admin-entradas-main-text">
+            {entrada.reserva?.usuario
+              ? `${entrada.reserva.usuario.nombre} ${entrada.reserva.usuario.apellidos}`
+              : "Usuario desconocido"}
           </p>
-          <p style={{ fontWeight: 500, fontSize: "0.95rem", marginBottom: 2 }}>
-            {entrada.evento?.nombre ?? "Desconocido"}
+          <p className="admin-entradas-muted-mono">
+            {entrada.reserva?.usuario?.email ?? "—"}
           </p>
-          <p
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.72rem",
-              color: "var(--text-muted)",
-            }}
-          >
-            {entrada.evento?.fechaInicio ? formatFecha(entrada.evento.fechaInicio) : "—"} ·{" "}
-            {entrada.evento?.recinto?.nombre ?? ""}
-          </p>
+        </DataBlock>
+
+        <div className="admin-entradas-block-spacing">
+          <DataBlock label="Reserva">
+            <p className="admin-entradas-cyan-code">
+              {entrada.reserva?.codigoReserva ?? "—"}
+            </p>
+          </DataBlock>
         </div>
 
-        {/* Grid datos */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 12,
-            marginBottom: 20,
-          }}
-        >
-          <div
-            style={{
-              background: "var(--bg-elevated)",
-              border: "1px solid var(--border-subtle)",
-              borderRadius: "var(--radius-md)",
-              padding: "14px 16px",
-            }}
-          >
-            <p
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.65rem",
-                color: "var(--text-muted)",
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                marginBottom: 6,
-              }}
-            >
-              Precio
+        <div className="admin-entradas-block-spacing">
+          <DataBlock label="Evento">
+            <p className="admin-entradas-main-text">
+              {entrada.evento?.nombre ?? "Desconocido"}
             </p>
-            <p
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "2rem",
-                lineHeight: 1,
-                color: "var(--neon-acid)",
-              }}
-            >
+            <p className="admin-entradas-muted-mono">
+              {entrada.evento?.fechaInicio
+                ? formatFecha(entrada.evento.fechaInicio)
+                : "—"}
+              {entrada.evento?.recinto?.nombre
+                ? ` · ${entrada.evento.recinto.nombre}`
+                : ""}
+            </p>
+          </DataBlock>
+        </div>
+
+        <div className="admin-entradas-modal-grid">
+          <DataBlock label="Precio">
+            <p className="admin-entradas-price-big">
               {entrada.precio.toFixed(2)}€
             </p>
-          </div>
+          </DataBlock>
 
-          <div
-            style={{
-              background: "var(--bg-elevated)",
-              border: "1px solid var(--border-subtle)",
-              borderRadius: "var(--radius-md)",
-              padding: "14px 16px",
-            }}
-          >
-            <p
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.65rem",
-                color: "var(--text-muted)",
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                marginBottom: 6,
-              }}
-            >
-              Generada
-            </p>
-            <p
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.82rem",
-                color: "var(--text-primary)",
-              }}
-            >
+          <DataBlock label="Generada">
+            <p className="admin-entradas-date-text">
               {formatFecha(entrada.fechaGeneracion)}
             </p>
-          </div>
+
+            {entrada.fechaUso && (
+              <p className="admin-entradas-used-date">
+                Usada: {formatFecha(entrada.fechaUso)}
+              </p>
+            )}
+          </DataBlock>
         </div>
 
-        {/* QR code */}
-        <div
-          style={{
-            background: "var(--bg-elevated)",
-            border: "1px solid var(--border-subtle)",
-            borderRadius: "var(--radius-md)",
-            padding: "12px 16px",
-            marginBottom: 20,
-          }}
-        >
-          <p
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.65rem",
-              color: "var(--text-muted)",
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              marginBottom: 4,
-            }}
-          >
-            Código QR
-          </p>
-          <p
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.78rem",
-              color: "var(--neon-cyan)",
-              wordBreak: "break-all",
-              letterSpacing: "0.06em",
-            }}
-          >
-            {entrada.codigoQr}
-          </p>
-        </div>
+        <DataBlock label="Código QR">
+          <p className="admin-entradas-qr-code">{entrada.codigoQr}</p>
+        </DataBlock>
 
-        {/* Fecha de uso si está usada */}
-        {entrada.fechaUso && (
-          <p
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.72rem",
-              color: "var(--text-muted)",
-              marginBottom: 20,
-            }}
-          >
-            Usada el {formatFecha(entrada.fechaUso)}
-          </p>
-        )}
+        {editandoTipo && (
+          <div className="admin-entradas-edit-box">
+            <p className="admin-entradas-edit-title">Editar tipo y precio</p>
 
-        {/* Editar tipo/precio */}
-        {editandoTipo ? (
-          <div
-            style={{
-              background: "var(--bg-elevated)",
-              border: "1px solid rgba(204,255,0,0.2)",
-              borderRadius: "var(--radius-md)",
-              padding: "16px",
-              marginBottom: 16,
-            }}
-          >
-            <p
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.7rem",
-                color: "var(--neon-acid)",
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                marginBottom: 12,
-              }}
-            >
-              Editar tipo y precio
-            </p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+            <div className="admin-entradas-edit-grid">
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "0.65rem",
-                    color: "var(--text-muted)",
-                    marginBottom: 6,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
-                  }}
-                >
-                  Tipo
-                </label>
+                <label className="admin-entradas-form-label">Tipo</label>
+
                 <select
                   className="form-select"
                   value={nuevoTipo}
@@ -371,20 +232,10 @@ function ModalEntrada({
                   <option value="BACKSTAGE">BACKSTAGE</option>
                 </select>
               </div>
+
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "0.65rem",
-                    color: "var(--text-muted)",
-                    marginBottom: 6,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
-                  }}
-                >
-                  Precio (€)
-                </label>
+                <label className="admin-entradas-form-label">Precio (€)</label>
+
                 <input
                   className="form-input"
                   type="number"
@@ -395,95 +246,74 @@ function ModalEntrada({
                 />
               </div>
             </div>
-            <div style={{ display: "flex", gap: 10 }}>
+
+            <div className="admin-entradas-edit-actions">
               <button
-                className="btn btn-acid btn-sm"
+                className="btn btn-acid btn-sm admin-entradas-flex-btn"
                 disabled={cargando}
                 onClick={handleGuardarTipo}
-                style={{ flex: 1 }}
               >
                 {cargando ? "Guardando..." : "Guardar"}
               </button>
+
               <button
                 className="btn btn-secondary btn-sm"
-                onClick={() => {
-                  setEditandoTipo(false);
-                  setNuevoTipo(entrada.tipoEntrada);
-                  setNuevoPrecio(entrada.precio.toString());
-                }}
+                onClick={handleCancelarEdicion}
               >
                 Cancelar
               </button>
             </div>
           </div>
-        ) : null}
+        )}
 
         {error && (
-          <div
-            style={{
-              background: "rgba(255,0,170,0.08)",
-              border: "1px solid rgba(255,0,170,0.3)",
-              borderRadius: "var(--radius-sm)",
-              padding: "12px 16px",
-              color: "var(--neon-magenta)",
-              fontSize: "0.88rem",
-              marginBottom: 16,
-            }}
-          >
-            ⚠ {error}
+          <div className="admin-entradas-error-spacing">
+            <MsgError msg={error} />
           </div>
         )}
 
-        {/* Acciones */}
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-          {entrada.estado === "VALIDA" && (
-            <button
-              className="btn btn-acid btn-sm"
-              disabled={cargando}
-              onClick={handleValidar}
-              title="Marcar como usada"
-              style={{ flex: 1 }}
-            >
-              ✓ Validar
-            </button>
-          )}
+        {!editandoTipo && (
+          <div className="admin-entradas-modal-actions">
+            {entrada.estado === "VALIDA" && (
+              <button
+                className="btn btn-acid btn-sm admin-entradas-flex-btn"
+                disabled={cargando}
+                onClick={handleValidar}
+              >
+                ✓ Validar acceso
+              </button>
+            )}
 
-          {entrada.estado !== "CANCELADA" && (
-            <button
-              className="btn btn-danger btn-sm"
-              disabled={cargando}
-              onClick={handleCancelar}
-              style={{ flex: 1 }}
-            >
-              ✕ Cancelar
-            </button>
-          )}
+            {entrada.estado !== "CANCELADA" && (
+              <button
+                className="btn btn-danger btn-sm admin-entradas-flex-btn"
+                disabled={cargando}
+                onClick={handleCancelar}
+              >
+                ✕ Cancelar entrada
+              </button>
+            )}
 
-          {!editandoTipo && (
             <button
-              className="btn btn-secondary btn-sm"
+              className="btn btn-secondary btn-sm admin-entradas-flex-btn"
               disabled={cargando}
-              onClick={() => setEditandoTipo(true)}
-              style={{ flex: 1 }}
+              onClick={() => {
+                setEditandoTipo(true);
+                setError("");
+              }}
             >
-              ✎ Tipo/Precio
+              ✎ Tipo / Precio
             </button>
-          )}
 
-          <button
-            className="btn btn-sm"
-            style={{
-              border: "1px solid var(--neon-cyan)",
-              color: "var(--neon-cyan)",
-              background: "transparent",
-              flex: 1,
-            }}
-            disabled={descargando}
-            onClick={handleDescargarPdf}
-          >
-            {descargando ? "..." : "↓ PDF"}
-          </button>
-        </div>
+            <button
+              className="btn btn-sm admin-entradas-pdf-btn"
+              disabled={descargando}
+              onClick={handleDescargarPdf}
+            >
+              {descargando ? "Descargando..." : "↓ PDF"}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -497,7 +327,8 @@ function AdminEntradasPage() {
   const [busqueda, setBusqueda] = useState("");
   const [filtroEstado, setFiltroEstado] = useState("");
   const [filtroTipo, setFiltroTipo] = useState("");
-  const [entradaSeleccionada, setEntradaSeleccionada] = useState<Entrada | null>(null);
+  const [entradaSeleccionada, setEntradaSeleccionada] =
+    useState<Entrada | null>(null);
 
   useEffect(() => {
     getEntradas()
@@ -508,22 +339,61 @@ function AdminEntradasPage() {
 
   const entradasFiltradas = useMemo(() => {
     const texto = busqueda.toLowerCase();
-    return entradas.filter((e) => {
+
+    return entradas.filter((entrada) => {
       const coincide =
-        e.codigoQr.toLowerCase().includes(texto) ||
-        e.evento?.nombre?.toLowerCase().includes(texto) ||
-        String(e.id).includes(texto);
-      const coincideEstado = filtroEstado === "" || e.estado === filtroEstado;
-      const coincideTipo = filtroTipo === "" || e.tipoEntrada === filtroTipo;
+        entrada.codigoQr.toLowerCase().includes(texto) ||
+        entrada.evento?.nombre?.toLowerCase().includes(texto) ||
+        entrada.reserva?.codigoReserva?.toLowerCase().includes(texto) ||
+        entrada.reserva?.usuario?.nombre?.toLowerCase().includes(texto) ||
+        entrada.reserva?.usuario?.apellidos?.toLowerCase().includes(texto) ||
+        entrada.reserva?.usuario?.email?.toLowerCase().includes(texto) ||
+        String(entrada.id).includes(texto);
+
+      const coincideEstado =
+        filtroEstado === "" || entrada.estado === filtroEstado;
+
+      const coincideTipo =
+        filtroTipo === "" || entrada.tipoEntrada === filtroTipo;
+
       return coincide && coincideEstado && coincideTipo;
     });
   }, [entradas, busqueda, filtroEstado, filtroTipo]);
 
-  // Summary
-  const validas = entradas.filter((e) => e.estado === "VALIDA").length;
-  const usadas = entradas.filter((e) => e.estado === "USADA").length;
-  const canceladas = entradas.filter((e) => e.estado === "CANCELADA").length;
-  const vip = entradas.filter((e) => e.tipoEntrada === "VIP").length;
+  const validas = entradas.filter((entrada) => entrada.estado === "VALIDA").length;
+  const usadas = entradas.filter((entrada) => entrada.estado === "USADA").length;
+  const canceladas = entradas.filter(
+    (entrada) => entrada.estado === "CANCELADA"
+  ).length;
+  const vip = entradas.filter((entrada) => entrada.tipoEntrada === "VIP").length;
+
+  const resumen = [
+    {
+      label: "Total entradas",
+      value: entradas.length,
+      className: "admin-entradas-stat-cyan",
+    },
+    {
+      label: "Válidas",
+      value: validas,
+      className: "admin-entradas-stat-acid",
+    },
+    {
+      label: "Usadas",
+      value: usadas,
+      className: "admin-entradas-stat-cyan",
+    },
+    {
+      label: "Canceladas",
+      value: canceladas,
+      className: "admin-entradas-stat-magenta",
+    },
+    {
+      label: "VIP",
+      value: vip,
+      className: "admin-entradas-stat-purple",
+    },
+  ];
 
   if (cargando) {
     return (
@@ -538,101 +408,51 @@ function AdminEntradasPage() {
   return (
     <section className="page">
       <div className="container">
-        {/* Cabecera */}
-        <div style={{ marginBottom: 40 }}>
+        <div className="admin-entradas-page-header">
           <h2 className="page-title">
             GESTIÓN <span className="page-title-accent">ENTRADAS</span>
           </h2>
+
           <p className="page-subtitle">
             Valida accesos, cancela entradas, actualiza tipo y precio, descarga PDFs.
           </p>
         </div>
 
-        {error && (
-          <div
-            style={{
-              background: "rgba(255,0,170,0.08)",
-              border: "1px solid rgba(255,0,170,0.3)",
-              borderRadius: "var(--radius-md)",
-              padding: "16px 20px",
-              color: "var(--neon-magenta)",
-              marginBottom: 32,
-            }}
-          >
-            ⚠ {error}
-          </div>
-        )}
+        {error && <MsgError msg={error} />}
 
-        {/* Summary */}
         <div className="summary-grid">
-          {[
-            { label: "Total entradas", value: entradas.length, color: "var(--neon-cyan)" },
-            { label: "Válidas", value: validas, color: "var(--neon-acid)" },
-            { label: "Usadas", value: usadas, color: "var(--neon-cyan)" },
-            { label: "Canceladas", value: canceladas, color: "var(--neon-magenta)" },
-            { label: "VIP", value: vip, color: "var(--neon-purple)" },
-          ].map(({ label, value, color }) => (
-            <div
-              key={label}
-              style={{
-                background: "var(--bg-card)",
-                border: "1px solid var(--border-subtle)",
-                borderRadius: "var(--radius-md)",
-                padding: "20px 24px",
-              }}
-            >
-              <p
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "0.68rem",
-                  letterSpacing: "0.14em",
-                  color: "var(--text-muted)",
-                  textTransform: "uppercase",
-                  marginBottom: 8,
-                }}
-              >
-                {label}
-              </p>
-              <p
-                style={{
-                  fontFamily: "var(--font-display)",
-                  fontSize: "2.2rem",
-                  lineHeight: 1,
-                  color,
-                  filter: `drop-shadow(0 0 8px ${color}66)`,
-                }}
-              >
-                {value}
-              </p>
+          {resumen.map(({ label, value, className }) => (
+            <div key={label} className="admin-entradas-stat-card">
+              <p className="admin-entradas-stat-label">{label}</p>
+              <p className={`admin-entradas-stat-value ${className}`}>{value}</p>
             </div>
           ))}
         </div>
 
-        {/* Filtros */}
-        <div className="filters-bar" style={{ marginBottom: 24 }}>
+        <div className="filters-bar admin-entradas-filters">
           <input
             type="text"
-            placeholder="Buscar por ID, QR o evento..."
+            placeholder="Buscar por ID, QR, evento, usuario o reserva..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
             className="form-input"
           />
+
           <select
             value={filtroEstado}
             onChange={(e) => setFiltroEstado(e.target.value)}
-            className="form-select"
-            style={{ maxWidth: 200 }}
+            className="form-select admin-entradas-filter-select"
           >
             <option value="">Todos los estados</option>
             <option value="VALIDA">Válidas</option>
             <option value="USADA">Usadas</option>
             <option value="CANCELADA">Canceladas</option>
           </select>
+
           <select
             value={filtroTipo}
             onChange={(e) => setFiltroTipo(e.target.value)}
-            className="form-select"
-            style={{ maxWidth: 200 }}
+            className="form-select admin-entradas-filter-select"
           >
             <option value="">Todos los tipos</option>
             <option value="GENERAL">General</option>
@@ -641,12 +461,13 @@ function AdminEntradasPage() {
           </select>
         </div>
 
-        {/* Tabla */}
         <div className="data-table-wrapper">
           <table className="data-table">
             <thead>
               <tr>
                 <th>#</th>
+                <th>Usuario</th>
+                <th>Reserva</th>
                 <th>Evento</th>
                 <th>Tipo</th>
                 <th>Precio</th>
@@ -655,95 +476,79 @@ function AdminEntradasPage() {
                 <th>Acciones</th>
               </tr>
             </thead>
+
             <tbody>
               {entradasFiltradas.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={7}
-                    style={{
-                      textAlign: "center",
-                      color: "var(--text-muted)",
-                      fontFamily: "var(--font-mono)",
-                      fontSize: "0.8rem",
-                      padding: "40px 16px",
-                    }}
-                  >
+                  <td colSpan={9} className="admin-entradas-empty-cell">
                     — Sin resultados
                   </td>
                 </tr>
               ) : (
-                entradasFiltradas.map((e) => (
-                  <tr key={e.id}>
+                entradasFiltradas.map((entrada) => (
+                  <tr key={entrada.id}>
                     <td>
-                      <span
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "0.78rem",
-                          color: "var(--text-muted)",
-                        }}
-                      >
-                        #{e.id}
+                      <span className="admin-entradas-id-text">#{entrada.id}</span>
+                    </td>
+
+                    <td>
+                      <p className="admin-entradas-table-main-text">
+                        {entrada.reserva?.usuario
+                          ? `${entrada.reserva.usuario.nombre} ${entrada.reserva.usuario.apellidos}`
+                          : "Usuario desconocido"}
+                      </p>
+
+                      <p className="admin-entradas-table-muted-text">
+                        {entrada.reserva?.usuario?.email ?? "—"}
+                      </p>
+                    </td>
+
+                    <td>
+                      <span className="admin-entradas-table-code">
+                        {entrada.reserva?.codigoReserva ?? "—"}
                       </span>
                     </td>
 
                     <td>
-                      <div>
-                        <p style={{ fontWeight: 500, fontSize: "0.9rem" }}>
-                          {e.evento?.nombre ?? "Desconocido"}
+                      <p className="admin-entradas-table-main-text">
+                        {entrada.evento?.nombre ?? "Desconocido"}
+                      </p>
+
+                      {entrada.evento?.recinto?.nombre && (
+                        <p className="admin-entradas-table-muted-text">
+                          {entrada.evento.recinto.nombre}
                         </p>
-                        <p
-                          style={{
-                            fontFamily: "var(--font-mono)",
-                            fontSize: "0.7rem",
-                            color: "var(--text-muted)",
-                            marginTop: 2,
-                          }}
-                        >
-                          {e.evento?.recinto?.nombre ?? ""}
-                        </p>
-                      </div>
+                      )}
                     </td>
 
                     <td>
-                      <span className={`tag ${tipoTag[e.tipoEntrada]}`}>
-                        {e.tipoEntrada}
+                      <span className={`tag ${tipoTag[entrada.tipoEntrada]}`}>
+                        {entrada.tipoEntrada}
                       </span>
                     </td>
 
                     <td>
-                      <span
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "0.85rem",
-                          color: "var(--neon-acid)",
-                        }}
-                      >
-                        {e.precio.toFixed(2)}€
+                      <span className="admin-entradas-table-price">
+                        {entrada.precio.toFixed(2)}€
                       </span>
                     </td>
 
                     <td>
-                      <span className={`tag ${estadoTag[e.estado]}`}>
-                        {e.estado}
+                      <span className={`tag ${estadoTag[entrada.estado]}`}>
+                        {entrada.estado}
                       </span>
                     </td>
 
                     <td>
-                      <span
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "0.75rem",
-                          color: "var(--text-muted)",
-                        }}
-                      >
-                        {formatFecha(e.fechaGeneracion)}
+                      <span className="admin-entradas-table-date">
+                        {formatFecha(entrada.fechaGeneracion)}
                       </span>
                     </td>
 
                     <td>
                       <button
                         className="btn btn-secondary btn-sm"
-                        onClick={() => setEntradaSeleccionada(e)}
+                        onClick={() => setEntradaSeleccionada(entrada)}
                       >
                         Gestionar
                       </button>
@@ -755,27 +560,20 @@ function AdminEntradasPage() {
           </table>
         </div>
 
-        <p
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "0.72rem",
-            color: "var(--text-muted)",
-            marginTop: 16,
-            textAlign: "right",
-          }}
-        >
+        <p className="admin-entradas-results-count">
           {entradasFiltradas.length} de {entradas.length} entradas
         </p>
       </div>
 
-      {/* Modal detalle */}
       {entradaSeleccionada && (
         <ModalEntrada
           entrada={entradaSeleccionada}
           onClose={() => setEntradaSeleccionada(null)}
           onActualizada={(actualizada) => {
             setEntradas((prev) =>
-              prev.map((e) => (e.id === actualizada.id ? actualizada : e))
+              prev.map((entrada) =>
+                entrada.id === actualizada.id ? actualizada : entrada
+              )
             );
             setEntradaSeleccionada(actualizada);
           }}

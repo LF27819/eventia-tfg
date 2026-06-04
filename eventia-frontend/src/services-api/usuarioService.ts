@@ -15,7 +15,7 @@ export const updateUsuario = async (
   id: number,
   usuario: Partial<Usuario>
 ): Promise<Usuario> => {
-  const response = await api.put(`/usuarios/${id}`, usuario);
+  const response = await api.patch(`/usuarios/${id}`, usuario);
   return response.data;
 };
 
@@ -31,7 +31,7 @@ export const cambiarRolUsuario = async (
   id: number,
   rol: RolUsuario
 ): Promise<Usuario> => {
-  const response = await api.patch(`/usuarios/${id}/rol?rol=${rol}`);
+  const response = await api.patch(`/usuarios/${id}`, { rol });
   return response.data;
 };
 

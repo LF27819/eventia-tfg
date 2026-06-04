@@ -14,11 +14,18 @@ function LoginPage() {
     e.preventDefault();
     setError("");
     setCargando(true);
+
     try {
       await login({ email, password });
       navigate("/");
-    } catch {
-      setError("Credenciales incorrectas");
+    } catch (err: any) {
+      if (err.response?.status === 403) {
+        setError("Tu cuenta está desactivada. Contacta con administración.");
+      } else if (err.response?.status === 401) {
+        setError("Credenciales incorrectas.");
+      } else {
+        setError("No se pudo iniciar sesión. Inténtalo de nuevo.");
+      }
     } finally {
       setCargando(false);
     }
@@ -27,6 +34,7 @@ function LoginPage() {
   return (
     <div className="auth-page">
       <div className="auth-bg" />
+
       <div className="auth-card">
         <h2 className="auth-title">ACCEDER</h2>
         <p className="auth-subtitle">Accede a tu próxima experiencia.</p>
@@ -58,7 +66,11 @@ function LoginPage() {
             />
           </div>
 
-          {error && <div className="msg-error"><span>⚠</span> {error}</div>}
+          {error && (
+            <div className="msg-error">
+              <span>⚠</span> {error}
+            </div>
+          )}
 
           <button
             type="submit"
@@ -71,8 +83,7 @@ function LoginPage() {
         </form>
 
         <div className="auth-footer">
-          ¿No tienes cuenta?{" "}
-          <Link to="/register">Crear cuenta</Link>
+          ¿No tienes cuenta? <Link to="/register">Crear cuenta</Link>
         </div>
       </div>
     </div>
