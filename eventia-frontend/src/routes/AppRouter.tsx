@@ -14,6 +14,9 @@ import OrganizerEventFormPage from "../pages/OrganizerEventFormPage";
 import OrganizerVenuesPage from "../pages/OrganizerVenuesPage";
 import ArtistDetailPage from "../pages/ArtistDetailPage";
 import VenueDetailPage from "../pages/VenueDetailPage";
+import AdminUsersPage from "../pages/AdminUsersPage";
+import AdminBookingsPage from "../pages/AdminBookingsPage";
+import AdminTicketsPage from "../pages/AdminTicketsPage";
 
 function AppRouter() {
   return (
@@ -34,6 +37,9 @@ function AppRouter() {
       <Route path="/organizador/recintos" element={<OrganizerVenuesPage />} />
       <Route path="/artistas/:id" element={<ArtistDetailPage />} />
       <Route path="/recintos/:id" element={<VenueDetailPage />} />
+      <Route path="/admin/usuarios" element={<AdminUsersPage />} />
+      <Route path="/admin/reservas" element={<AdminBookingsPage />} />
+      <Route path="/admin/entradas" element={<AdminTicketsPage />} />
     </Routes>
   );
 }
