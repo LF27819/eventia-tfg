@@ -2483,6 +2483,307 @@ img { max-width: 100%; display: block; }
   color: var(--neon-cyan);
 }
 
+/* ── Gestion usuario admin ──────────────────────────────────────── */
+
+.admin-user-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 6, 8, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+}
+
+.admin-user-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--modal-accent-border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0 40px var(--modal-accent-shadow);
+  animation: pageFadeIn 0.2s ease;
+}
+
+.modal-accent-cyan {
+  --modal-accent: var(--neon-cyan);
+  --modal-accent-border: rgba(0, 245, 255, 0.2);
+  --modal-accent-shadow: rgba(0, 245, 255, 0.13);
+}
+
+.modal-accent-acid {
+  --modal-accent: var(--neon-acid);
+  --modal-accent-border: rgba(183, 255, 0, 0.2);
+  --modal-accent-shadow: rgba(183, 255, 0, 0.13);
+}
+
+.modal-accent-magenta {
+  --modal-accent: var(--neon-magenta);
+  --modal-accent-border: rgba(255, 0, 170, 0.2);
+  --modal-accent-shadow: rgba(255, 0, 170, 0.13);
+}
+
+.admin-user-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.admin-user-modal-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  letter-spacing: 0.06em;
+  color: var(--modal-accent);
+}
+
+.admin-user-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.4rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+}
+
+.admin-user-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-user-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.admin-user-form-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.admin-user-error-box {
+  background: rgba(255, 0, 170, 0.08);
+  border: 1px solid rgba(255, 0, 170, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  color: var(--neon-magenta);
+  font-size: 0.88rem;
+}
+
+.admin-user-page-error {
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 32px;
+}
+
+.admin-user-error-text {
+  color: var(--neon-magenta);
+}
+
+.admin-user-error-text-spaced {
+  margin-bottom: 16px;
+}
+
+.admin-user-empty-text {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.admin-user-modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.admin-user-modal-actions-spaced {
+  margin-top: 8px;
+}
+
+.admin-user-flex-button {
+  flex: 1;
+}
+
+.admin-user-reservas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-user-reserva-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 16px;
+  align-items: start;
+}
+
+.admin-user-reserva-title {
+  font-weight: 500;
+  margin-bottom: 4px;
+  font-size: 0.92rem;
+}
+
+.admin-user-reserva-info {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+.admin-user-reserva-date {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.admin-user-delete-text {
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  line-height: 1.7;
+}
+
+.admin-user-delete-name {
+  color: var(--text-primary);
+}
+
+.admin-user-page-header {
+  margin-bottom: 40px;
+}
+
+.admin-user-summary-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.admin-user-summary-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.admin-user-summary-value {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.summary-value-cyan {
+  color: var(--neon-cyan);
+  filter: drop-shadow(0 0 8px rgba(0, 245, 255, 0.4));
+}
+
+.summary-value-acid {
+  color: var(--neon-acid);
+  filter: drop-shadow(0 0 8px rgba(183, 255, 0, 0.4));
+}
+
+.summary-value-magenta {
+  color: var(--neon-magenta);
+  filter: drop-shadow(0 0 8px rgba(255, 0, 170, 0.4));
+}
+
+.summary-value-purple {
+  color: var(--neon-purple);
+  filter: drop-shadow(0 0 8px rgba(153, 51, 255, 0.4));
+}
+
+.admin-user-filters-bar {
+  margin-bottom: 24px;
+}
+
+.admin-user-filter-select {
+  max-width: 200px;
+}
+
+.admin-user-table-empty {
+  text-align: center;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 40px 16px;
+}
+
+.admin-user-table-name {
+  font-weight: 500;
+  font-size: 0.92rem;
+}
+
+.admin-user-table-id {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.admin-user-table-email {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
+.admin-user-role-select {
+  width: auto;
+  min-width: 140px;
+  padding: 6px 32px 6px 10px;
+  font-size: 0.78rem;
+}
+
+.admin-user-status-button {
+  cursor: pointer;
+  border: none;
+}
+
+.admin-user-table-date {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.admin-user-reservas-button {
+  border: 1px solid var(--neon-acid);
+  color: var(--neon-acid);
+  background: transparent;
+}
+
+.admin-user-results-count {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 16px;
+  text-align: right;
+}
+
+@media (max-width: 680px) {
+  .admin-user-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-user-modal-actions {
+    flex-direction: column;
+  }
+}
+
+
 
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 768px) {
