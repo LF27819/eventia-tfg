@@ -1,18 +1,22 @@
-name: eventia-interfaces-docker
+name: eventia-tfg-docker
 
 services:
   db:
     image: mariadb:11.3.2
-    container_name: eventia-interfaces-db-docker
+    container_name: eventia-tfg-docker-db
+
     environment:
       MYSQL_ROOT_PASSWORD: eventia_root_pass
-      MYSQL_DATABASE: eventia_aa2_db
-      MYSQL_USER: eventia_user
-      MYSQL_PASSWORD: eventia_pass
+      MYSQL_DATABASE: eventia_tfg_db
+      MYSQL_USER: eventia_tfg_user
+      MYSQL_PASSWORD: eventia_tfg_pass
+
     ports:
-      - "3315:3306"
+      - "3313:3306"
+
     volumes:
-      - eventia_interfaces_data:/var/lib/mysql
+      - eventia_tfg_data:/var/lib/mysql
+
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
@@ -23,31 +27,39 @@ services:
     build:
       context: ./eventia-backend
       dockerfile: Dockerfile
-    container_name: eventia-interfaces-backend-docker
+
+    container_name: eventia-tfg-docker-backend
+
     depends_on:
       db:
         condition: service_healthy
+
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/eventia_aa2_db
-      SPRING_DATASOURCE_USERNAME: eventia_user
-      SPRING_DATASOURCE_PASSWORD: eventia_pass
-      SPRING_JPA_HIBERNATE_DDL_AUTO: create
+      SERVER_PORT: 8090
+      SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/eventia_tfg_db
+      SPRING_DATASOURCE_USERNAME: eventia_tfg_user
+      SPRING_DATASOURCE_PASSWORD: eventia_tfg_pass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_SQL_INIT_MODE: always
       SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION: true
+
     ports:
-      - "8080:8080"
+      - "8090:8090"
 
   frontend:
     build:
       context: ./eventia-frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: http://localhost:8080
-    container_name: eventia-interfaces-frontend-docker
+        VITE_API_URL: http://localhost:8090
+
+    container_name: eventia-tfg-docker-frontend
+
     depends_on:
       - backend
+
     ports:
-      - "5175:4173"
+      - "5173:4173"
 
 volumes:
-  eventia_interfaces_data:
+  eventia_tfg_data:
