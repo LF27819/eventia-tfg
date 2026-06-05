@@ -85,7 +85,7 @@ function EventCard({ evento, style }: EventCardProps) {
 
           {evento.estado !== "PUBLICADO" && (
             <span className={`tag ${estadoEventoTag(evento.estado)}`}>
-              {evento.estado}
+              {evento.estado === "BORRADOR" ? "PRÓXIMAMENTE" : evento.estado}
             </span>
           )}
         </div>
