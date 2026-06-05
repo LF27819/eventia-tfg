@@ -5,10 +5,12 @@ import { useAuth } from "../context/AuthContext";
 function RegisterPage() {
   const navigate = useNavigate();
   const { register } = useAuth();
+
   const [nombre, setNombre] = useState("");
   const [apellidos, setApellidos] = useState("");
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
+  const [fechaNacimiento, setFechaNacimiento] = useState("");
   const [password, setPassword] = useState("");
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
@@ -17,8 +19,17 @@ function RegisterPage() {
     e.preventDefault();
     setError("");
     setCargando(true);
+
     try {
-      await register({ nombre, apellidos, email, telefono, password });
+      await register({
+        nombre,
+        apellidos,
+        email,
+        telefono,
+        fechaNacimiento,
+        password,
+      });
+
       navigate("/perfil");
     } catch {
       setError("No se pudo completar el registro");
@@ -30,12 +41,19 @@ function RegisterPage() {
   return (
     <div className="auth-page">
       <div className="auth-bg" />
+
       <div className="auth-card" style={{ maxWidth: 480 }}>
         <h2 className="auth-title">REGISTRO</h2>
         <p className="auth-subtitle">Crea tu acceso al universo Eventia.</p>
 
         <form onSubmit={handleSubmit} className="auth-form">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 16,
+            }}
+          >
             <div className="form-field">
               <label className="form-label">Nombre</label>
               <input
@@ -47,6 +65,7 @@ function RegisterPage() {
                 required
               />
             </div>
+
             <div className="form-field">
               <label className="form-label">Apellidos</label>
               <input
@@ -85,6 +104,17 @@ function RegisterPage() {
           </div>
 
           <div className="form-field">
+            <label className="form-label">Fecha de nacimiento</label>
+            <input
+              type="date"
+              value={fechaNacimiento}
+              onChange={(e) => setFechaNacimiento(e.target.value)}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="form-field">
             <label className="form-label">Contraseña</label>
             <input
               type="password"
@@ -97,7 +127,11 @@ function RegisterPage() {
             />
           </div>
 
-          {error && <div className="msg-error"><span>⚠</span> {error}</div>}
+          {error && (
+            <div className="msg-error">
+              <span>⚠</span> {error}
+            </div>
+          )}
 
           <button
             type="submit"
@@ -110,8 +144,7 @@ function RegisterPage() {
         </form>
 
         <div className="auth-footer">
-          ¿Ya tienes cuenta?{" "}
-          <Link to="/login">Iniciar sesión</Link>
+          ¿Ya tienes cuenta? <Link to="/login">Iniciar sesión</Link>
         </div>
       </div>
     </div>

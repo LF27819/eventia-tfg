@@ -11,7 +11,18 @@ export interface RegisterRequest {
   email: string;
   password: string;
   telefono?: string;
+  fechaNacimiento: string;
+}
+
+export interface AuthUser {
+  id: number;
+  email: string;
+  rol: RolUsuario;
+  nombre: string;
+  apellidos?: string;
+  telefono?: string;
   fechaNacimiento?: string;
+  activo?: boolean;
 }
 
 export interface AuthResponse {
@@ -25,7 +36,7 @@ export interface AuthResponse {
 export interface MeResponse {
   id: number;
   email: string;
-  rol: string;
+  rol: RolUsuario;
   nombre: string;
   token?: string | null;
 }

@@ -151,7 +151,7 @@ function EventDetailPage() {
       navigate("/mis-reservas");
     } catch (error) {
       console.error("Error al reservar:", error);
-      setErrorReserva("No se pudo completar la reserva.");
+      setErrorReserva("No puedes reservar este evento porque no cumples la edad mínima requerida.");
     } finally {
       setReservando(false);
     }
