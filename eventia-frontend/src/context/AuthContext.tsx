@@ -58,7 +58,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
               email: me.email,
               rol: me.rol,
               nombre: me.nombre,
-              saldoCuenta: me.saldoCuenta,
             },
           },
         });
@@ -88,7 +87,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
           email: me.email,
           rol: me.rol,
           nombre: me.nombre,
-          saldoCuenta: me.saldoCuenta,
         },
       },
     });
@@ -110,7 +108,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
           email: me.email,
           rol: me.rol,
           nombre: me.nombre,
-          saldoCuenta: me.saldoCuenta,
         },
       },
     });

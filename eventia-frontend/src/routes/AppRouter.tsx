@@ -17,6 +17,7 @@ import VenueDetailPage from "../pages/VenueDetailPage";
 import AdminUsersPage from "../pages/AdminUsersPage";
 import AdminBookingsPage from "../pages/AdminBookingsPage";
 import AdminTicketsPage from "../pages/AdminTicketsPage";
+import NotFoundPage from "../pages/NotFoundPage";
 
 function AppRouter() {
   return (
@@ -40,6 +41,7 @@ function AppRouter() {
       <Route path="/admin/usuarios" element={<AdminUsersPage />} />
       <Route path="/admin/reservas" element={<AdminBookingsPage />} />
       <Route path="/admin/entradas" element={<AdminTicketsPage />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

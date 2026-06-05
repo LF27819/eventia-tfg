@@ -3559,6 +3559,40 @@ img { max-width: 100%; display: block; }
   }
 }
 
+/* ── Not Found──────────────────────────────────────── */
+.notfound-card {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.notfound-code {
+  font-size: 8rem;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--neon-acid);
+  text-shadow: 0 0 30px rgba(204, 255, 0, 0.35);
+}
+
+.notfound-title {
+  font-size: 2.4rem;
+  margin: 0;
+}
+
+.notfound-text {
+  max-width: 500px;
+  color: var(--text-dim);
+}
+
+.notfound-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
 
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 768px) {
