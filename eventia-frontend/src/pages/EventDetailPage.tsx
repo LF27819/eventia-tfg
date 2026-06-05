@@ -5,7 +5,7 @@ import type { Evento, EstadoEvento, TipoEvento } from "../types/evento";
 import Loading from "../components/ui/Loading";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { createReserva } from "../services-api/reservaService";
-import { useAuth } from "../context/AuthContext"
+import { useAuth } from "../context/AuthContext";
 import EventCountdown from "../components/events/EventCountdown";
 import TicketAvailability from "../components/events/TicketAvailability";
 import EventLineup from "../components/events/EventLineup";
@@ -38,6 +38,11 @@ function estadoEventoTag(estado: EstadoEvento): string {
   }
 }
 
+function textoEstadoEvento(estado: EstadoEvento): string {
+  if (estado === "BORRADOR") return "PRÓXIMAMENTE";
+  return estado;
+}
+
 function formatFecha(fecha: string): string {
   return new Date(fecha).toLocaleDateString("es-ES", {
     day: "2-digit",
@@ -57,6 +62,7 @@ function EventDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+
   const [evento, setEvento] = useState<Evento | null>(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -118,6 +124,10 @@ function EventDetailPage() {
 
   const totalReserva = cantidadEntradas * evento.precioBase;
 
+  const eventoPublicado = evento.estado === "PUBLICADO";
+  const hayEntradas = evento.entradasDisponibles > 0;
+  const eventoReservable = eventoPublicado && hayEntradas;
+
   const restarEntrada = () => {
     setCantidadEntradas((actual) => Math.max(1, actual - 1));
   };
@@ -131,6 +141,18 @@ function EventDetailPage() {
   const handleReservar = async () => {
     if (!user?.id) {
       navigate("/login");
+      return;
+    }
+
+    if (!eventoPublicado) {
+      setErrorReserva(
+        "Este evento todavía no está publicado y no admite reservas."
+      );
+      return;
+    }
+
+    if (!hayEntradas) {
+      setErrorReserva("No quedan entradas disponibles para este evento.");
       return;
     }
 
@@ -151,7 +173,9 @@ function EventDetailPage() {
       navigate("/mis-reservas");
     } catch (error) {
       console.error("Error al reservar:", error);
-      setErrorReserva("No se pudo completar la reserva.");
+      setErrorReserva(
+        "No se ha podido completar la reserva. Revisa que cumplas la edad mínima del evento."
+      );
     } finally {
       setReservando(false);
     }
@@ -195,7 +219,7 @@ function EventDetailPage() {
               </span>
 
               <span className={`tag ${estadoEventoTag(evento.estado)}`}>
-                {evento.estado}
+                {textoEstadoEvento(evento.estado)}
               </span>
 
               {evento.edadMinima > 0 && (
@@ -205,7 +229,6 @@ function EventDetailPage() {
 
             <div className="detail-title-countdown-row">
               <h2 className="detail-title">{evento.nombre}</h2>
-
               <EventCountdown fechaInicio={evento.fechaInicio} />
             </div>
 
@@ -266,7 +289,7 @@ function EventDetailPage() {
 
             {evento.recinto?.latitud && evento.recinto?.longitud && (
               <>
-                <h3 className="detail-section-title">UBICACIÓN DEL RECINTO </h3>
+                <h3 className="detail-section-title">UBICACIÓN DEL RECINTO</h3>
 
                 <div className="location-panel">
                   <div className="location-info">
@@ -295,7 +318,12 @@ function EventDetailPage() {
                         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                       />
 
-                      <Marker position={[evento.recinto.latitud, evento.recinto.longitud]}>
+                      <Marker
+                        position={[
+                          evento.recinto.latitud,
+                          evento.recinto.longitud,
+                        ]}
+                      >
                         <Popup>
                           <strong>{evento.nombre}</strong>
                           <br />
@@ -307,67 +335,92 @@ function EventDetailPage() {
                     </MapContainer>
                   </div>
                 </div>
-                <h3 className="detail-section-title">ENTRADAS</h3>
-
-                <div className="booking-panel">
-                  <div>
-                    <span className="tag tag-acid">RESERVA</span>
-
-                    <h4>Vive esta experiencia</h4>
-
-                    <p>
-                      Elige cuántas entradas quieres reservar. Podrás consultar tus reservas y
-                      entradas desde tu zona privada.
-                    </p>
-                  </div>
-
-                  <div className="booking-box">
-                    <div className="booking-row">
-                      <span>Precio unitario</span>
-                      <strong>{evento.precioBase}€</strong>
-                    </div>
-
-                    <div className="booking-row">
-                      <span>Entradas disponibles</span>
-                      <strong>{evento.entradasDisponibles}</strong>
-                    </div>
-
-                    <div className="booking-counter">
-                      <button type="button" onClick={restarEntrada} disabled={cantidadEntradas <= 1}>
-                        −
-                      </button>
-
-                      <span>{cantidadEntradas}</span>
-
-                      <button
-                        type="button"
-                        onClick={sumarEntrada}
-                        disabled={cantidadEntradas >= evento.entradasDisponibles}
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    <div className="booking-total">
-                      <span>Total</span>
-                      <strong>{totalReserva.toFixed(2)}€</strong>
-                    </div>
-
-                    {errorReserva && <div className="msg-error">{errorReserva}</div>}
-
-                    <button
-                      type="button"
-                      className="btn btn-acid"
-                      style={{ width: "100%" }}
-                      onClick={handleReservar}
-                      disabled={reservando || evento.entradasDisponibles <= 0}
-                    >
-                      {reservando ? "Reservando..." : "Reservar entradas"}
-                    </button>
-                  </div>
-                </div>
               </>
             )}
+
+            <h3 className="detail-section-title">ENTRADAS</h3>
+
+            <div className="booking-panel">
+              <div>
+                <span className={eventoReservable ? "tag tag-acid" : "tag tag-muted"}>
+                  {eventoReservable ? "RESERVA" : "NO DISPONIBLE"}
+                </span>
+
+                <h4>
+                  {eventoReservable
+                    ? "Vive esta experiencia"
+                    : "Evento no disponible para reservas"}
+                </h4>
+
+                <p>
+                  {eventoReservable
+                    ? "Elige cuántas entradas quieres reservar. Podrás consultar tus reservas y entradas desde tu zona privada."
+                    : evento.estado === "BORRADOR"
+                    ? "Este evento aparecerá como próximamente hasta que el organizador lo publique."
+                    : "Este evento no admite reservas en este momento."}
+                </p>
+              </div>
+
+              <div className="booking-box">
+                <div className="booking-row">
+                  <span>Precio unitario</span>
+                  <strong>{evento.precioBase}€</strong>
+                </div>
+
+                <div className="booking-row">
+                  <span>Entradas disponibles</span>
+                  <strong>{evento.entradasDisponibles}</strong>
+                </div>
+
+                <div className="booking-counter">
+                  <button
+                    type="button"
+                    onClick={restarEntrada}
+                    disabled={!eventoReservable || cantidadEntradas <= 1}
+                  >
+                    −
+                  </button>
+
+                  <span>{cantidadEntradas}</span>
+
+                  <button
+                    type="button"
+                    onClick={sumarEntrada}
+                    disabled={
+                      !eventoReservable ||
+                      cantidadEntradas >= evento.entradasDisponibles
+                    }
+                  >
+                    +
+                  </button>
+                </div>
+
+                <div className="booking-total">
+                  <span>Total</span>
+                  <strong>{totalReserva.toFixed(2)}€</strong>
+                </div>
+
+                {!eventoReservable && (
+                  <div className="msg-error">
+                    {evento.estado === "BORRADOR"
+                      ? "Este evento estará disponible próximamente y todavía no admite reservas."
+                      : "Este evento no está disponible para reservas."}
+                  </div>
+                )}
+
+                {errorReserva && <div className="msg-error">{errorReserva}</div>}
+
+                <button
+                  type="button"
+                  className="btn btn-acid"
+                  style={{ width: "100%" }}
+                  onClick={handleReservar}
+                  disabled={reservando || !eventoReservable}
+                >
+                  {reservando ? "Reservando..." : "Reservar entradas"}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
