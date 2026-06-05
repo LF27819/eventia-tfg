@@ -6,9 +6,31 @@ import {
   updateEvento,
 } from "../services-api/eventoService";
 import { getRecintos } from "../services-api/recintoService";
+import { getArtistas } from "../services-api/artistaService";
 import { useAuth } from "../context/AuthContext";
 import type { Recinto } from "../types/recinto";
+import type { Artista } from "../types/artista";
 import Loading from "../components/ui/Loading";
+
+type TipoEvento = "FESTIVAL" | "CONCIERTO" | "SESION";
+type EstadoEvento = "BORRADOR" | "PUBLICADO" | "CANCELADO" | "FINALIZADO";
+
+interface EventoPayload {
+  nombre: string;
+  descripcion: string;
+  tipoEvento: TipoEvento;
+  estado: EstadoEvento;
+  fechaInicio: string;
+  fechaFin: string;
+  precioBase: number;
+  aforoTotal: number;
+  entradasDisponibles: number;
+  edadMinima: number;
+  imagenUrl?: string;
+  recinto: { id: number };
+  organizador: { id: number };
+  artistas: { id: number }[];
+}
 
 function OrganizerEventFormPage() {
   const navigate = useNavigate();
@@ -18,14 +40,17 @@ function OrganizerEventFormPage() {
   const modoEdicion = Boolean(id);
 
   const [recintos, setRecintos] = useState<Recinto[]>([]);
+  const [artistas, setArtistas] = useState<Artista[]>([]);
+  const [artistasSeleccionados, setArtistasSeleccionados] = useState<number[]>([]);
+
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
 
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [tipoEvento, setTipoEvento] = useState("FESTIVAL");
-  const [estado, setEstado] = useState("BORRADOR");
+  const [tipoEvento, setTipoEvento] = useState<TipoEvento>("FESTIVAL");
+  const [estado, setEstado] = useState<EstadoEvento>("BORRADOR");
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
   const [precioBase, setPrecioBase] = useState(0);
@@ -38,16 +63,21 @@ function OrganizerEventFormPage() {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const recintosData = await getRecintos();
+        const [recintosData, artistasData] = await Promise.all([
+          getRecintos(),
+          getArtistas(),
+        ]);
+
         setRecintos(recintosData);
+        setArtistas(artistasData);
 
         if (id) {
           const evento = await getEventoById(Number(id));
 
           setNombre(evento.nombre);
           setDescripcion(evento.descripcion);
-          setTipoEvento(evento.tipoEvento);
-          setEstado(evento.estado);
+          setTipoEvento(evento.tipoEvento as TipoEvento);
+          setEstado(evento.estado as EstadoEvento);
           setFechaInicio(evento.fechaInicio.slice(0, 16));
           setFechaFin(evento.fechaFin.slice(0, 16));
           setPrecioBase(evento.precioBase);
@@ -56,6 +86,12 @@ function OrganizerEventFormPage() {
           setEdadMinima(evento.edadMinima);
           setImagenUrl(evento.imagenUrl || "");
           setRecintoId(String(evento.recinto.id));
+
+          if (evento.artistas) {
+            setArtistasSeleccionados(
+              evento.artistas.map((artista: Artista) => artista.id)
+            );
+          }
         }
       } catch (error) {
         console.error("Error al cargar formulario:", error);
@@ -67,6 +103,14 @@ function OrganizerEventFormPage() {
 
     cargarDatos();
   }, [id]);
+
+  const toggleArtista = (artistaId: number) => {
+    setArtistasSeleccionados((prev) =>
+      prev.includes(artistaId)
+        ? prev.filter((id) => id !== artistaId)
+        : [...prev, artistaId]
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -84,11 +128,11 @@ function OrganizerEventFormPage() {
     setGuardando(true);
     setError("");
 
-    const payload = {
+    const payload: EventoPayload = {
       nombre,
       descripcion,
-      tipoEvento: tipoEvento as any,
-      estado: modoEdicion ? (estado as any) : "BORRADOR",
+      tipoEvento,
+      estado: modoEdicion ? estado : "BORRADOR",
       fechaInicio,
       fechaFin,
       precioBase,
@@ -98,11 +142,13 @@ function OrganizerEventFormPage() {
       imagenUrl: imagenUrl || undefined,
       recinto: {
         id: Number(recintoId),
-      } as any,
+      },
       organizador: {
         id: user.id,
-      } as any,
-      artistas: [],
+      },
+      artistas: artistasSeleccionados.map((artistaId) => ({
+        id: artistaId,
+      })),
     };
 
     try {
@@ -178,7 +224,7 @@ function OrganizerEventFormPage() {
                 <select
                   className="form-select"
                   value={tipoEvento}
-                  onChange={(e) => setTipoEvento(e.target.value)}
+                  onChange={(e) => setTipoEvento(e.target.value as TipoEvento)}
                 >
                   <option value="FESTIVAL">Festival</option>
                   <option value="CONCIERTO">Concierto</option>
@@ -191,7 +237,7 @@ function OrganizerEventFormPage() {
                 <select
                   className="form-select"
                   value={estado}
-                  onChange={(e) => setEstado(e.target.value)}
+                  onChange={(e) => setEstado(e.target.value as EstadoEvento)}
                   disabled={!modoEdicion}
                 >
                   <option value="BORRADOR">Borrador</option>
@@ -216,6 +262,31 @@ function OrganizerEventFormPage() {
                     </option>
                   ))}
                 </select>
+              </div>
+            </div>
+
+            <div className="form-field">
+              <label className="form-label">Artistas</label>
+
+              <div className="artist-select-grid">
+                {artistas.map((artista) => {
+                  const seleccionado = artistasSeleccionados.includes(artista.id);
+
+                  return (
+                    <button
+                      key={artista.id}
+                      type="button"
+                      className={`artist-select-card ${seleccionado ? "selected" : ""}`}
+                      onClick={() => toggleArtista(artista.id)}
+                    >
+                      {artista.imagenUrl && (
+                        <img src={artista.imagenUrl} alt={artista.nombreArtistico} />
+                      )}
+
+                      <span>{artista.nombreArtistico}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -309,8 +380,8 @@ function OrganizerEventFormPage() {
                 {guardando
                   ? "Guardando..."
                   : modoEdicion
-                  ? "Guardar cambios"
-                  : "Guardar borrador"}
+                    ? "Guardar cambios"
+                    : "Guardar borrador"}
               </button>
 
               <button

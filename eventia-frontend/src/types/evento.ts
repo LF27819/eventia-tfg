@@ -35,3 +35,29 @@ export interface Evento {
 
   artistas: Artista[];
 }
+
+export interface EventoRequest {
+  nombre: string;
+  descripcion: string;
+  tipoEvento: TipoEvento;
+  estado: EstadoEvento;
+  fechaInicio: string;
+  fechaFin: string;
+  precioBase: number;
+  aforoTotal: number;
+  entradasDisponibles: number;
+  edadMinima: number;
+  imagenUrl?: string;
+
+  recinto: {
+    id: number;
+  };
+
+  organizador: {
+    id: number;
+  };
+
+  artistas: {
+    id: number;
+  }[];
+}

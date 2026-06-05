@@ -1846,6 +1846,49 @@ img { max-width: 100%; display: block; }
   color: var(--text-muted);
 }
 
+/* ── Formulario crear eventos organizador ──────────────────────────────────────── */
+.artist-select-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.artist-select-card {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 18px;
+  padding: 14px;
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  transition: 0.2s ease;
+}
+
+.artist-select-card:hover {
+  border-color: var(--cyan);
+  transform: translateY(-2px);
+}
+
+.artist-select-card.selected {
+  border-color: var(--acid);
+  background: rgba(204, 255, 0, 0.1);
+  box-shadow: 0 0 20px rgba(204, 255, 0, 0.18);
+}
+
+.artist-select-card img {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.artist-select-card span {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
 
 /* ── Detalle artista ──────────────────────────────────────── */
 .artist-name-link {
